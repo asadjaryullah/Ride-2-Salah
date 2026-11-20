@@ -1,6 +1,7 @@
 import webpush from "web-push";
 import { createClient } from "@supabase/supabase-js";
 import { isMainAdmin, hasAdminConfigured } from "@/lib/admin";
+import { sendNativePush, hasFirebaseConfigured } from "@/lib/push-native";
 
 let vapidConfigured = false;
 
@@ -75,6 +76,25 @@ export async function sendPushToAll(payload: PushPayload, logs: string[] = []) {
   }
 
   logs.push(`✅ ${successCount}/${subs.length} erfolgreich gesendet`);
+
+  // Native App (iOS/Android via FCM) - unabhaengig von Web Push, gleiche
+  // Payload. Laeuft nur, wenn FIREBASE_SERVICE_ACCOUNT gesetzt ist.
+  if (hasFirebaseConfigured()) {
+    const { data: nativeTokens } = await getSupabase().from("native_push_tokens").select("token");
+    if (nativeTokens?.length) {
+      const { successCount: nativeSuccess, invalidTokens } = await sendNativePush(
+        nativeTokens.map((t) => t.token),
+        payload,
+        logs
+      );
+      if (invalidTokens.length > 0) {
+        await getSupabase().from("native_push_tokens").delete().in("token", invalidTokens);
+      }
+      logs.push(`✅ ${nativeSuccess}/${nativeTokens.length} native Geräte erreicht`);
+      successCount += nativeSuccess;
+    }
+  }
+
   return successCount;
 }
 
@@ -168,6 +188,26 @@ export async function sendPushToGender(
   }
 
   logs.push(`✅ ${successCount}/${subs.length} erfolgreich gesendet`);
+
+  if (hasFirebaseConfigured()) {
+    const { data: nativeTokens } = await supabase
+      .from("native_push_tokens")
+      .select("token")
+      .in("user_id", userIds);
+    if (nativeTokens?.length) {
+      const { successCount: nativeSuccess, invalidTokens } = await sendNativePush(
+        nativeTokens.map((t) => t.token),
+        payload,
+        logs
+      );
+      if (invalidTokens.length > 0) {
+        await supabase.from("native_push_tokens").delete().in("token", invalidTokens);
+      }
+      logs.push(`✅ ${nativeSuccess}/${nativeTokens.length} native Geräte erreicht`);
+      successCount += nativeSuccess;
+    }
+  }
+
   return successCount;
 }
 
@@ -189,8 +229,7 @@ export async function sendPushToUser(
   }
 
   if (!subs?.length) {
-    logs.push(`⚠️ Keine Subscription für User ${userId}`);
-    return 0;
+    logs.push(`⚠️ Keine Web-Push-Subscription für User ${userId}`);
   }
 
   let successCount = 0;
@@ -216,6 +255,24 @@ export async function sendPushToUser(
 
   if (invalidIds.length > 0) {
     await getSupabase().from("push_subscriptions").delete().in("id", invalidIds);
+  }
+
+  if (hasFirebaseConfigured()) {
+    const { data: nativeTokens } = await getSupabase()
+      .from("native_push_tokens")
+      .select("token")
+      .eq("user_id", userId);
+    if (nativeTokens?.length) {
+      const { successCount: nativeSuccess, invalidTokens } = await sendNativePush(
+        nativeTokens.map((t) => t.token),
+        payload,
+        logs
+      );
+      if (invalidTokens.length > 0) {
+        await getSupabase().from("native_push_tokens").delete().in("token", invalidTokens);
+      }
+      successCount += nativeSuccess;
+    }
   }
 
   return successCount;

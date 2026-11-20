@@ -10,6 +10,7 @@ import BottomNav from "@/components/BottomNav";
 import MosqueDetector from "@/components/MosqueDetector";
 import InstallPrompt from "@/components/InstallPrompt";
 import PushManager from "@/components/PushManager";
+import NativePushManager from "@/components/NativePushManager";
 
 // Provider
 import { AuthProvider } from "@/providers/AuthProvider";
@@ -92,6 +93,7 @@ export default function RootLayout({
         <AuthProvider>
           {/* Background services */}
           <PushManager />
+          <NativePushManager />
           <InstallPrompt />
           <MosqueDetector />
 
