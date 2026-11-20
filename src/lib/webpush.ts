@@ -1,7 +1,8 @@
 import webpush from "web-push";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { isMainAdmin, hasAdminConfigured } from "@/lib/admin";
 import { sendNativePush, hasFirebaseConfigured } from "@/lib/push-native";
+import { sendApnsPush, hasApnsConfigured } from "@/lib/push-apns";
 
 let vapidConfigured = false;
 
@@ -27,6 +28,46 @@ export interface PushPayload {
   title: string;
   body: string;
   url?: string;
+}
+
+/* Android laeuft ueber Firebase (FCM), iOS direkt ueber Apple (APNs) -
+   siehe push-native.ts bzw. push-apns.ts fuer die Begruendung. An dieser
+   Stelle nur die Weiche anhand der gespeicherten platform-Spalte, damit
+   sendPushToAll/-Gender/-User das nicht alle drei einzeln machen muessen. */
+async function dispatchNativeTokens(
+  supabase: SupabaseClient,
+  nativeTokens: { token: string; platform: string }[] | null | undefined,
+  payload: PushPayload,
+  logs: string[]
+): Promise<number> {
+  if (!nativeTokens?.length) return 0;
+
+  const androidTokens = nativeTokens.filter((t) => t.platform === "android").map((t) => t.token);
+  const iosTokens = nativeTokens.filter((t) => t.platform === "ios").map((t) => t.token);
+
+  let successCount = 0;
+  const invalidTokens: string[] = [];
+
+  if (androidTokens.length && hasFirebaseConfigured()) {
+    const result = await sendNativePush(androidTokens, payload, logs);
+    successCount += result.successCount;
+    invalidTokens.push(...result.invalidTokens);
+  }
+
+  if (iosTokens.length && hasApnsConfigured()) {
+    const result = await sendApnsPush(iosTokens, payload, logs);
+    successCount += result.successCount;
+    invalidTokens.push(...result.invalidTokens);
+  }
+
+  if (invalidTokens.length) {
+    await supabase.from("native_push_tokens").delete().in("token", invalidTokens);
+  }
+
+  const attempted = androidTokens.length + iosTokens.length;
+  if (attempted) logs.push(`✅ ${successCount}/${attempted} native Geräte erreicht`);
+
+  return successCount;
 }
 
 // Sendet an alle Subscriptions in der Datenbank
@@ -77,22 +118,11 @@ export async function sendPushToAll(payload: PushPayload, logs: string[] = []) {
 
   logs.push(`✅ ${successCount}/${subs.length} erfolgreich gesendet`);
 
-  // Native App (iOS/Android via FCM) - unabhaengig von Web Push, gleiche
-  // Payload. Laeuft nur, wenn FIREBASE_SERVICE_ACCOUNT gesetzt ist.
-  if (hasFirebaseConfigured()) {
-    const { data: nativeTokens } = await getSupabase().from("native_push_tokens").select("token");
-    if (nativeTokens?.length) {
-      const { successCount: nativeSuccess, invalidTokens } = await sendNativePush(
-        nativeTokens.map((t) => t.token),
-        payload,
-        logs
-      );
-      if (invalidTokens.length > 0) {
-        await getSupabase().from("native_push_tokens").delete().in("token", invalidTokens);
-      }
-      logs.push(`✅ ${nativeSuccess}/${nativeTokens.length} native Geräte erreicht`);
-      successCount += nativeSuccess;
-    }
+  // Native App (iOS/Android) - unabhaengig von Web Push, gleiche Payload.
+  if (hasFirebaseConfigured() || hasApnsConfigured()) {
+    const supabase = getSupabase();
+    const { data: nativeTokens } = await supabase.from("native_push_tokens").select("token, platform");
+    successCount += await dispatchNativeTokens(supabase, nativeTokens, payload, logs);
   }
 
   return successCount;
@@ -189,23 +219,12 @@ export async function sendPushToGender(
 
   logs.push(`✅ ${successCount}/${subs.length} erfolgreich gesendet`);
 
-  if (hasFirebaseConfigured()) {
+  if (hasFirebaseConfigured() || hasApnsConfigured()) {
     const { data: nativeTokens } = await supabase
       .from("native_push_tokens")
-      .select("token")
+      .select("token, platform")
       .in("user_id", userIds);
-    if (nativeTokens?.length) {
-      const { successCount: nativeSuccess, invalidTokens } = await sendNativePush(
-        nativeTokens.map((t) => t.token),
-        payload,
-        logs
-      );
-      if (invalidTokens.length > 0) {
-        await supabase.from("native_push_tokens").delete().in("token", invalidTokens);
-      }
-      logs.push(`✅ ${nativeSuccess}/${nativeTokens.length} native Geräte erreicht`);
-      successCount += nativeSuccess;
-    }
+    successCount += await dispatchNativeTokens(supabase, nativeTokens, payload, logs);
   }
 
   return successCount;
@@ -257,22 +276,13 @@ export async function sendPushToUser(
     await getSupabase().from("push_subscriptions").delete().in("id", invalidIds);
   }
 
-  if (hasFirebaseConfigured()) {
-    const { data: nativeTokens } = await getSupabase()
+  if (hasFirebaseConfigured() || hasApnsConfigured()) {
+    const supabase = getSupabase();
+    const { data: nativeTokens } = await supabase
       .from("native_push_tokens")
-      .select("token")
+      .select("token, platform")
       .eq("user_id", userId);
-    if (nativeTokens?.length) {
-      const { successCount: nativeSuccess, invalidTokens } = await sendNativePush(
-        nativeTokens.map((t) => t.token),
-        payload,
-        logs
-      );
-      if (invalidTokens.length > 0) {
-        await getSupabase().from("native_push_tokens").delete().in("token", invalidTokens);
-      }
-      successCount += nativeSuccess;
-    }
+    successCount += await dispatchNativeTokens(supabase, nativeTokens, payload, logs);
   }
 
   return successCount;
