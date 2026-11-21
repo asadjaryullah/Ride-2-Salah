@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "654703526121",
+    "project_id": "ride2salah",
+    "storage_bucket": "ride2salah.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:654703526121:android:1c062b462d208097fc7078",
+        "android_client_info": {
+          "package_name": "app.ride2salah.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBQm49ZrJ5kOLbOTp3O7TrIrxqQ1-xNsdk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Ride 2 Salah</string>
+    <string name="title_activity_main">Ride 2 Salah</string>
+    <string name="package_name">app.ride2salah.mobile</string>
+    <string name="custom_url_scheme">app.ride2salah.mobile</string>
+</resources>
