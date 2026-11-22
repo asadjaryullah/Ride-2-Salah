@@ -72,7 +72,13 @@ export default function PullToRefresh({ onRefresh, children }: { onRefresh: () =
           }}
         />
       </div>
-      {children}
+      {/* eigener Flex-Container fuer die Karten, getrennt vom Pull-
+          Indikator oben - sonst wuerde dessen eigener gap-5-Abstand auch
+          dann einen Luecke erzeugen, wenn der Indikator eingeklappt
+          (height: 0) ist. */}
+      <div className="flex flex-col gap-5">
+        {children}
+      </div>
     </div>
   );
 }
