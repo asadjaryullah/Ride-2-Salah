@@ -806,7 +806,7 @@ function HistoryContent() {
 export default function HistoryPage() {
   const router = useTransitionRouter();
   return (
-    <main className="min-h-screen flex flex-col items-center p-4 pb-20" style={{ background: 'var(--app-bg)' }}>
+    <main className="min-h-screen flex flex-col items-center p-4 pb-nav-safe" style={{ background: 'var(--app-bg)' }}>
       <div className="w-full max-w-md flex items-center mb-6">
         <Button variant="ghost" size="icon" onClick={() => router.push('/')}>
           <ArrowLeft className="h-6 w-6" style={{ color: 'var(--app-text2)' }} />

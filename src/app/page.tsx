@@ -431,7 +431,7 @@ export default function HomePage() {
   const emoji = profile?.gender === 'female' ? '🧕🏻' : '🧔🏻‍♂️';
 
   return (
-    <main className="min-h-screen flex flex-col p-5 gap-5 pb-20 relative z-10"
+    <main className="min-h-screen flex flex-col p-5 gap-5 pb-nav-safe relative z-10"
       style={{ background: 'var(--app-bg)' }}>
 
       {/* Einfuehrung beim allerersten Start - zeigt sich selbst nur einmal

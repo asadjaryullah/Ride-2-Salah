@@ -367,7 +367,7 @@ export default function LearnPage() {
                   <p className="text-xs font-black uppercase tracking-wide" style={{ color: section === sec ? 'var(--app-bg)' : 'var(--app-text3)' }}>
                     {label}
                   </p>
-                  <p className="text-[10px] mt-0.5 font-semibold" style={{ color: section === sec ? 'rgba(255,255,255,0.6)' : 'var(--app-text3)' }}>
+                  <p className="text-[10px] mt-0.5 font-semibold" style={{ color: section === sec ? 'color-mix(in srgb, var(--app-bg) 60%, transparent)' : 'var(--app-text3)' }}>
                     {learned}/{sw.length} gelernt
                   </p>
                 </button>

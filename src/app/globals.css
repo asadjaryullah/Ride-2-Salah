@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Ersatz fuer pb-20 auf Seiten mit sichtbarer BottomNav: pb-20 (80px) war
+   knapp zu wenig fuer die Nav selbst (~72px Inhalt) PLUS das zusaetzliche
+   Sicherheitspolster am unteren Rand (env(safe-area-inset-bottom), auf
+   iPhones mit Home-Indicator ca. 34px) - der letzte Teil der Seite liess
+   sich dadurch nicht mehr antippen, weil die Nav ihn ueberdeckte. */
+.pb-nav-safe {
+  padding-bottom: calc(88px + env(safe-area-inset-bottom));
+}
+
 /* ═══════════════════════════════════════════
    DESIGN TOKENS — Light (warmes Creme)
 ═══════════════════════════════════════════ */

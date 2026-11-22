@@ -24,7 +24,7 @@ export default function ArrivalPage() {
   const progress = (completedCount / 4) * 100;
 
   return (
-    <main className="min-h-screen flex flex-col items-center p-6 pb-20" style={{ background: 'var(--app-bg)' }}>
+    <main className="min-h-screen flex flex-col items-center p-6 pb-nav-safe" style={{ background: 'var(--app-bg)' }}>
 
       <div className="mt-6 mb-6 p-6 rounded-full shadow-inner animate-in zoom-in duration-500" style={{ background: 'var(--app-emerald-dim)' }}>
         <span className="text-6xl">🕌</span>

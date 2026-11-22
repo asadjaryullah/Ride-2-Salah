@@ -602,7 +602,7 @@ export default function AdminPage() {
   /* press-feedback: gibt allen 30 Knoepfen hier die Druckreaktion, die der
      Rest der App schon hat. Regel steht in globals.css. */
   return (
-    <main className="min-h-screen flex flex-col items-center pb-20 press-feedback" style={{ background: 'var(--app-bg)' }}>
+    <main className="min-h-screen flex flex-col items-center pb-nav-safe press-feedback" style={{ background: 'var(--app-bg)' }}>
 
       {/* HEADER */}
       <div className="w-full px-4 py-3 flex items-center justify-between sticky top-0 z-10"

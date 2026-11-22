@@ -101,7 +101,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="min-h-screen flex flex-col items-center p-4 pb-20" style={{ background: 'var(--app-bg)' }}>
+    <main className="min-h-screen flex flex-col items-center p-4 pb-nav-safe" style={{ background: 'var(--app-bg)' }}>
 
       <div className="w-full max-w-sm flex items-center mb-6 mt-4">
         <Button variant="ghost" size="sm" onClick={() => router.push('/')}
