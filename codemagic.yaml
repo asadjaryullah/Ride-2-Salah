@@ -35,4 +35,10 @@ workflows:
     publishing:
       app_store_connect:
         auth: integration
-        submit_to_testflight: true
+        # Kein submit_to_testflight: Das schickt den Build durch Apples
+        # externe Beta-Pruefung - unnoetig fuer interne Tester, und Apple
+        # laesst immer nur EINEN Build pro App gleichzeitig in dieser
+        # Warteschlange zu. Interne Tester (App Store Connect Users)
+        # bekommen neue Builds ohne jede Pruefung, sobald sie bei Apple
+        # fertig verarbeitet sind - nur eben nicht automatisch einer
+        # Gruppe zugewiesen, das macht man einmalig in App Store Connect.
