@@ -9,6 +9,9 @@ import { User, Phone, Save, Loader2, ArrowLeft, Calendar, BadgeInfo, Lock, Messa
 import { toast } from "sonner";
 
 import LocationSettings from '@/components/LocationSettings';
+import { openWhatsAppChat } from '@/lib/share';
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
 
 const ADMIN_WHATSAPP = "+4915904273761";
 
@@ -89,7 +92,11 @@ export default function ProfilePage() {
     const url = isAndroid
       ? `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(httpsUrl)}`
       : `webcal://${host}${apiUrl}`;
-    window.open(url, '_blank');
+    // webcal:// ist kein Web-Link, sondern ein eigenes, vom Betriebssystem
+    // registriertes Schema (oeffnet direkt die Kalender-App) - dafuer ist
+    // der In-App-Browser nicht gedacht, hier bleibt window.open richtig.
+    if (isAndroid && Capacitor.isNativePlatform()) Browser.open({ url });
+    else window.open(url, '_blank');
   };
 
   if (loading) {
@@ -247,19 +254,14 @@ export default function ProfilePage() {
             {/* SUPPORT */}
             <div className="pt-4" style={{ borderTop: '1px dashed var(--app-border)' }}>
               <h3 className="text-sm font-bold mb-2" style={{ color: 'var(--app-text)' }}>Hilfe & Support</h3>
-              <a
-                href={`https://wa.me/${ADMIN_WHATSAPP}?text=Salam, ich habe einen Fehler in der App gefunden:`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <button
+                type="button"
+                onClick={() => openWhatsAppChat(ADMIN_WHATSAPP.replace(/[^0-9]/g, ''), "Salam, ich habe einen Fehler in der App gefunden:")}
+                className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-opacity hover:opacity-80"
+                style={{ background: 'var(--app-card)', border: '1px solid var(--app-border)', color: 'var(--app-text2)' }}
               >
-                <button
-                  type="button"
-                  className="w-full flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-opacity hover:opacity-80"
-                  style={{ background: 'var(--app-card)', border: '1px solid var(--app-border)', color: 'var(--app-text2)' }}
-                >
-                  <MessageSquareWarning size={18} /> Fehler melden (WhatsApp)
-                </button>
-              </a>
+                <MessageSquareWarning size={18} /> Fehler melden (WhatsApp)
+              </button>
             </div>
 
             {/* ABMELDEN */}

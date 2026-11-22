@@ -14,6 +14,7 @@ import MapComponent from '@/components/MapComponent';
 import { todayBerlin } from '@/lib/date';
 import { isMainAdmin } from "@/lib/admin";
 import { hapticSuccess } from "@/lib/haptics";
+import { shareText } from "@/lib/share";
 
 
 const getIcon = (id: string) => {
@@ -437,7 +438,7 @@ function SelectPrayerContent() {
               <button
                 onClick={() => {
                   const msg = `🚗 Ich fahre gleich zum ${shareSheet.prayerName}!\n\nNoch ${shareSheet.seats} freie ${shareSheet.seats === 1 ? 'Platz' : 'Plätze'}. Jetzt mitbuchen: ${window.location.origin}`;
-                  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+                  shareText(msg);
                 }}
                 className="w-full rounded-2xl py-3.5 text-[15px] font-extrabold flex items-center justify-center gap-2.5 active:scale-[0.97] transition-transform"
                 style={{ background: '#25D366', color: '#fff', touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}

@@ -8,6 +8,7 @@ import { APIProvider, Map, useMapsLibrary, useMap, AdvancedMarker } from '@vis.g
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, Phone, XCircle, Loader2, MessageCircle, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { openWhatsAppChat } from '@/lib/share';
 
 const MAP_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 const MOSQUE_LOCATION = { lat: 49.685590, lng: 8.593480 };
@@ -114,11 +115,10 @@ function PassengerDashboardContent() {
     router.push('/');
   };
 
-  const getWhatsAppLink = (phone: string) => {
-    if (!phone) return "#";
+  const contactDriverOnWhatsApp = (phone: string) => {
+    if (!phone) return;
     const cleanNumber = phone.replace(/[^0-9]/g, '').replace(/^0/, '49');
-    const text = encodeURIComponent("Salam Alaikum, ich fahre gleich bei dir mit! 🚕");
-    return `https://wa.me/${cleanNumber}?text=${text}`;
+    openWhatsAppChat(cleanNumber, "Salam Alaikum, ich fahre gleich bei dir mit! 🚕");
   };
 
   if (loading) return (
@@ -222,11 +222,13 @@ function PassengerDashboardContent() {
               <p className="text-xl font-bold" style={{ color: 'var(--app-text)' }}>{ride.driver_name}</p>
             </div>
             <div className="flex gap-2">
-              <a href={getWhatsAppLink(ride.driver_phone)} target="_blank" rel="noopener noreferrer">
-                <Button size="icon" className="bg-green-500 hover:bg-green-600 rounded-full h-10 w-10 shadow-md">
-                  <MessageCircle className="h-5 w-5 text-white" />
-                </Button>
-              </a>
+              <Button
+                size="icon"
+                onClick={() => contactDriverOnWhatsApp(ride.driver_phone)}
+                className="bg-green-500 hover:bg-green-600 rounded-full h-10 w-10 shadow-md"
+              >
+                <MessageCircle className="h-5 w-5 text-white" />
+              </Button>
               <a href={`tel:${ride.driver_phone}`}>
                 <Button size="icon" variant="outline" className="rounded-full h-10 w-10"
                   style={{ borderColor: 'var(--app-border)', color: 'var(--app-text2)' }}>

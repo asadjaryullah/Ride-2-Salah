@@ -9,6 +9,9 @@ import { Loader2, Navigation, User, Phone, CheckSquare, MapPin, MessageCircle, X
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { todayBerlin } from '@/lib/date';
+import { shareText, openWhatsAppChat } from '@/lib/share';
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
 
 const MAP_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 const MOSQUE_LOCATION = { lat: 49.685590, lng: 8.593480 };
@@ -28,11 +31,10 @@ function getDistanceInMeters(lat1: number, lon1: number, lat2: number, lon2: num
   return R * c;
 }
 
-const getWhatsAppLink = (phone: string, name: string) => {
-  if (!phone) return "#";
+const contactPassengerOnWhatsApp = (phone: string, name: string) => {
+  if (!phone) return;
   const cleanNumber = phone.replace(/[^0-9]/g, '').replace(/^0/, '49');
-  const text = encodeURIComponent(`Salam Alaikum ${name}, ich bin gleich da! 🚗`);
-  return `https://wa.me/${cleanNumber}?text=${text}`;
+  openWhatsAppChat(cleanNumber, `Salam Alaikum ${name}, ich bin gleich da! 🚗`);
 };
 
 // Route zeichnen
@@ -463,11 +465,13 @@ export default function DriverDashboard() {
 
                 <div className="flex gap-2">
                   {p.passenger_phone ? (
-                    <a href={getWhatsAppLink(p.passenger_phone, p.passenger_name)} target="_blank" rel="noopener noreferrer">
-                      <Button size="icon" className="bg-green-500 hover:bg-green-600 rounded-full h-10 w-10 shadow-sm text-white">
-                        <MessageCircle size={18} />
-                      </Button>
-                    </a>
+                    <Button
+                      size="icon"
+                      onClick={() => contactPassengerOnWhatsApp(p.passenger_phone, p.passenger_name)}
+                      className="bg-green-500 hover:bg-green-600 rounded-full h-10 w-10 shadow-sm text-white"
+                    >
+                      <MessageCircle size={18} />
+                    </Button>
                   ) : (
                     <Button size="icon" disabled className="rounded-full h-10 w-10" style={{ background: 'var(--app-surface2)', color: 'var(--app-text3)', opacity: 0.4 }}>
                       <MessageCircle size={18} />
@@ -502,7 +506,14 @@ export default function DriverDashboard() {
                  const origin = `${startPoint?.lat},${startPoint?.lng}`;
                  const destination = `${MOSQUE_LOCATION.lat},${MOSQUE_LOCATION.lng}`;
                  const waypoints = passengers.map(p => `${p.pickup_lat},${p.pickup_lon}`).join('|');
-                 window.open(`https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`, '_blank');
+                 const url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`;
+                 // maps.google.com ist bei iOS/Android als Universal Link fuer
+                 // die jeweils installierte Karten-App registriert - der
+                 // In-App-Browser reicht das zuverlaessiger weiter als
+                 // window.open, das in der nativen App sonst ueber den
+                 // System-Browser liefe.
+                 if (Capacitor.isNativePlatform()) Browser.open({ url });
+                 else window.open(url, '_blank');
               }}
             >
               <Navigation className="mr-1.5" size={17} /> Navigation
@@ -518,7 +529,7 @@ export default function DriverDashboard() {
                 // Adresse der laufenden Seite, damit der geteilte Link auch nach
                 // einem Domainwechsel stimmt
                 const msg = `🚗 Ich fahre gleich zum ${prayer}!${freeSeats}\nJetzt mitbuchen: ${window.location.origin}`;
-                window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+                shareText(msg);
               }}
             >
               <Share2 className="mr-1.5" size={17} /> WhatsApp

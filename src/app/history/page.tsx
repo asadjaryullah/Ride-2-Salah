@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { todayBerlin } from '@/lib/date';
+import { Browser } from '@capacitor/browser';
+import { Capacitor } from '@capacitor/core';
 
 // --- KONFIGURATION ZIKR ---
 const ZIKR_LIST = [
@@ -378,10 +380,9 @@ function HistoryContent() {
        ohnehin richtig. So stimmt der Link immer mit der Seite ueberein, auf der
        man gerade ist - auch auf einer spaeteren eigenen Domain. */
     const fullUrl = `${window.location.origin}${apiUrl}`;
-    window.open(
-      `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(fullUrl)}`,
-      '_blank'
-    );
+    const url = `https://calendar.google.com/calendar/r?cid=${encodeURIComponent(fullUrl)}`;
+    if (Capacitor.isNativePlatform()) Browser.open({ url });
+    else window.open(url, '_blank');
   };
 
   const nextMonth = () => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1));

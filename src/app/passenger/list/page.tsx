@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { User, ChevronLeft, MapPin, Loader2, Users, CheckCircle2, MessageCircle, Phone, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { todayBerlin } from '@/lib/date';
+import { openWhatsAppChat } from '@/lib/share';
 
 type BookingSuccess = { driverName: string; driverPhone: string; rideId: string };
 
@@ -166,9 +167,9 @@ function PassengerListContent() {
     );
   };
 
-  const waLink = (phone: string) => {
+  const contactDriverOnWhatsApp = (phone: string) => {
     const n = phone.replace(/[^0-9]/g, '').replace(/^0/, '49');
-    return `https://wa.me/${n}?text=${encodeURIComponent("Salam Alaikum, ich fahre gleich bei dir mit! 🚕")}`;
+    openWhatsAppChat(n, "Salam Alaikum, ich fahre gleich bei dir mit! 🚕");
   };
 
   return (
@@ -309,11 +310,12 @@ function PassengerListContent() {
             <div className="flex gap-3">
               {bookingSuccess.driverPhone ? (
                 <>
-                  <a href={waLink(bookingSuccess.driverPhone)} target="_blank" rel="noopener noreferrer" className="flex-1">
-                    <Button className="w-full h-12 rounded-xl bg-green-500 hover:bg-green-600 text-white">
-                      <MessageCircle className="mr-2 h-4 w-4" /> WhatsApp
-                    </Button>
-                  </a>
+                  <Button
+                    onClick={() => contactDriverOnWhatsApp(bookingSuccess.driverPhone)}
+                    className="flex-1 w-full h-12 rounded-xl bg-green-500 hover:bg-green-600 text-white"
+                  >
+                    <MessageCircle className="mr-2 h-4 w-4" /> WhatsApp
+                  </Button>
                   <a href={`tel:${bookingSuccess.driverPhone}`} className="shrink-0">
                     <Button variant="outline" className="h-12 w-12 rounded-xl p-0"
                       style={{ borderColor: 'var(--app-border)', color: 'var(--app-text2)' }}>
