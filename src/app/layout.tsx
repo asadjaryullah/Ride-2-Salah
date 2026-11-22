@@ -13,6 +13,7 @@ import PushManager from "@/components/PushManager";
 import NativePushManager from "@/components/NativePushManager";
 import DeepLinkHandler from "@/components/DeepLinkHandler";
 import HapticFeedback from "@/components/HapticFeedback";
+import StatusBarManager from "@/components/StatusBarManager";
 
 // Provider
 import { AuthProvider } from "@/providers/AuthProvider";
@@ -98,6 +99,7 @@ export default function RootLayout({
           <NativePushManager />
           <DeepLinkHandler />
           <HapticFeedback />
+          <StatusBarManager />
           <InstallPrompt />
           <MosqueDetector />
 
