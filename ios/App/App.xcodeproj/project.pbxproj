@@ -18,6 +18,7 @@
 		9582B6832FE993A70072D4E8 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9582B6822FE993A50072D4E8 /* SceneDelegate.swift */; };
 		9D8A2E438D93018FD28391FF /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5FFB204A06350FFE1CD11C69 /* GoogleService-Info.plist */; };
 		6F39B87D6D4975E730CCA727 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 531F206F7B44567EADAFDB9A /* MainViewController.swift */; };
+		AE1E195FCACE946292B3CEA2 /* AppSettingsPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2686351B47FE682D66F1342E /* AppSettingsPlugin.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +35,7 @@
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
 		5FFB204A06350FFE1CD11C69 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		531F206F7B44567EADAFDB9A /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
+		2686351B47FE682D66F1342E /* AppSettingsPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsPlugin.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,7 @@
 				50B271D01FEDC1A000F3C39B /* public */,
 				5FFB204A06350FFE1CD11C69 /* GoogleService-Info.plist */,
 				531F206F7B44567EADAFDB9A /* MainViewController.swift */,
+				2686351B47FE682D66F1342E /* AppSettingsPlugin.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -168,6 +171,7 @@
 				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
 				9582B6832FE993A70072D4E8 /* SceneDelegate.swift in Sources */,
 				6F39B87D6D4975E730CCA727 /* MainViewController.swift in Sources */,
+				AE1E195FCACE946292B3CEA2 /* AppSettingsPlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
