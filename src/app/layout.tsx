@@ -12,6 +12,7 @@ import InstallPrompt from "@/components/InstallPrompt";
 import PushManager from "@/components/PushManager";
 import NativePushManager from "@/components/NativePushManager";
 import DeepLinkHandler from "@/components/DeepLinkHandler";
+import HapticFeedback from "@/components/HapticFeedback";
 
 // Provider
 import { AuthProvider } from "@/providers/AuthProvider";
@@ -96,6 +97,7 @@ export default function RootLayout({
           <PushManager />
           <NativePushManager />
           <DeepLinkHandler />
+          <HapticFeedback />
           <InstallPrompt />
           <MosqueDetector />
 

@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import MapComponent from '@/components/MapComponent';
 import { todayBerlin } from '@/lib/date';
 import { isMainAdmin } from "@/lib/admin";
+import { hapticSuccess } from "@/lib/haptics";
 
 
 const getIcon = (id: string) => {
@@ -252,6 +253,7 @@ function SelectPrayerContent() {
           if (error) {
             toast.error("Fehler: " + error.message);
           } else {
+            hapticSuccess();
             setShareSheet({ prayerName: selectedPrayer.name, seats });
 
             /* Benachrichtigung nicht mehr ins Leere schicken: Bisher wurden

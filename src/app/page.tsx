@@ -12,6 +12,7 @@ import OnboardingTour from '@/components/OnboardingTour';
 import { toast } from 'sonner';
 import { todayBerlin } from '@/lib/date';
 import { isMainAdmin } from "@/lib/admin";
+import { hapticTap } from "@/lib/haptics";
 
 
 type DayState = {
@@ -229,6 +230,7 @@ export default function HomePage() {
       });
       if (res.ok) {
         const data = await res.json();
+        if (data.committed) hapticTap();
         setDayState(prev => prev ? {
           ...prev,
           commits: { ...prev.commits, [selectedPrayer.id]: { count: data.count, mine: data.committed } },
