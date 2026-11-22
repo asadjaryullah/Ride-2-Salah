@@ -31,6 +31,16 @@ const config: CapacitorConfig = {
     /* StatusBar wird nicht hier, sondern in StatusBarManager.tsx gesetzt -
        die Farbe haengt vom Hell-/Dunkelmodus ab, der sich zur Build-Zeit
        noch nicht kennt. */
+    /* launchAutoHide: false - die App laedt von der Vercel-URL ueber das
+       Netz, nicht aus lokal mitgelieferten Dateien. Mit der sonst festen,
+       kurzen Standardzeit wuerde der Splash oft verschwinden, bevor die
+       Seite wirklich fertig ist - sichtbares Aufblitzen von leerem/
+       ladendem Inhalt. SplashScreenManager.tsx blendet stattdessen aus,
+       sobald die Seite tatsaechlich geladen hat (mit Sicherheits-Timeout,
+       damit der Splash nie haengen bleibt, falls das Signal ausbleibt). */
+    SplashScreen: {
+      launchAutoHide: false,
+    },
   },
 };
 
