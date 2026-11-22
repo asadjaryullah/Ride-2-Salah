@@ -13,6 +13,8 @@ import { toast } from 'sonner';
 import { todayBerlin } from '@/lib/date';
 import { isMainAdmin } from "@/lib/admin";
 import { hapticTap } from "@/lib/haptics";
+import { Capacitor } from '@capacitor/core';
+import { PushNotifications } from '@capacitor/push-notifications';
 
 
 type DayState = {
@@ -168,8 +170,15 @@ export default function HomePage() {
           setShowOnboarding(true);
         }
 
-        // Notification permission check
-        if (mounted && typeof window !== 'undefined' && 'Notification' in window) {
+        // Notification permission check - in der nativen App ist
+        // window.Notification (Web-API) nicht die richtige Quelle: WKWebView
+        // liefert dafuer immer "denied", ohne dass je gefragt wurde - die
+        // Karte haette dann nur noch auf /profile verwiesen, statt den
+        // echten iOS/Android-Dialog auszuloesen.
+        if (mounted && Capacitor.isNativePlatform()) {
+          const nativePerm = await PushNotifications.checkPermissions();
+          setNotifPerm(nativePerm.receive === 'granted' ? 'granted' : nativePerm.receive === 'denied' ? 'denied' : 'default');
+        } else if (mounted && typeof window !== 'undefined' && 'Notification' in window) {
           setNotifPerm(Notification.permission);
         }
 
@@ -512,6 +521,18 @@ export default function HomePage() {
         <div className="stagger-2 rounded-xl p-4 flex items-center justify-between gap-3 cursor-pointer"
           style={{ background: 'var(--app-gold-dim)', border: '1px solid var(--app-gold)' }}
           onClick={async () => {
+            if (Capacitor.isNativePlatform()) {
+              if (notifPerm === 'denied') { router.push('/profile'); return; }
+              const requested = await PushNotifications.requestPermissions();
+              const granted = requested.receive === 'granted';
+              setNotifPerm(granted ? 'granted' : 'denied');
+              // Token-Speicherung uebernimmt NativePushManager.tsx ueber
+              // seinen globalen 'registration'-Listener - register() hier
+              // loest den nur aus.
+              if (granted) await PushNotifications.register();
+              return;
+            }
+
             if (!('Notification' in window)) return;
             if (notifPerm === 'denied') { router.push('/profile'); return; }
             const result = await Notification.requestPermission();
