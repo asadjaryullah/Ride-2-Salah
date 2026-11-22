@@ -9,6 +9,8 @@ import { User, ChevronLeft, MapPin, Loader2, Users, CheckCircle2, MessageCircle,
 import { toast } from "sonner";
 import { todayBerlin } from '@/lib/date';
 import { openWhatsAppChat } from '@/lib/share';
+import { getCurrentPosition } from '@/lib/geolocation';
+import { Capacitor } from '@capacitor/core';
 
 type BookingSuccess = { driverName: string; driverPhone: string; rideId: string };
 
@@ -116,13 +118,13 @@ function PassengerListContent() {
       return;
     }
 
-    if (!navigator.geolocation) {
+    if (!navigator.geolocation && !Capacitor.isNativePlatform()) {
       toast.error("GPS nicht verfügbar.");
       setBookingRideId(null);
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
+    getCurrentPosition(
       async (position) => {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;

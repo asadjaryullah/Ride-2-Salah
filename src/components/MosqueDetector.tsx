@@ -4,6 +4,8 @@ import { useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useTransitionRouter } from 'next-view-transitions';
 import { todayBerlin } from '@/lib/date';
+import { getCurrentPosition } from '@/lib/geolocation';
+import { Capacitor } from '@capacitor/core';
 
 const MOSQUE_LOCATION = { lat: 49.685590, lng: 8.593480 }; 
 
@@ -22,9 +24,9 @@ export default function MosqueDetector() {
   const router = useTransitionRouter();
 
   const checkLocation = async () => {
-    if (!('geolocation' in navigator)) return;
+    if (!('geolocation' in navigator) && !Capacitor.isNativePlatform()) return;
 
-    navigator.geolocation.getCurrentPosition(async (pos) => {
+    getCurrentPosition(async (pos) => {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
       const distance = getDistanceInMeters(lat, lng, MOSQUE_LOCATION.lat, MOSQUE_LOCATION.lng);

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { X, Share, PlusSquare, Download } from "lucide-react";
+import { Capacitor } from '@capacitor/core';
 
 export default function InstallPrompt() {
   const [isIOS, setIsIOS] = useState(false);
@@ -11,6 +12,10 @@ export default function InstallPrompt() {
   const [show, setShow] = useState(false);
 
   useEffect(() => {
+    // In der nativen App ist die Erinnerung zur Installation sinnlos -
+    // man hat die App ja bereits installiert.
+    if (Capacitor.isNativePlatform()) return;
+
     // 1. Prüfen: Läuft die App schon als "App"?
     const isStandaloneMode = window.matchMedia('(display-mode: standalone)').matches;
     setIsStandalone(isStandaloneMode);

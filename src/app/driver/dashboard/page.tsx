@@ -12,6 +12,7 @@ import { todayBerlin } from '@/lib/date';
 import { shareText, openWhatsAppChat } from '@/lib/share';
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
+import { watchPosition, clearWatch } from '@/lib/geolocation';
 
 const MAP_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 const MOSQUE_LOCATION = { lat: 49.685590, lng: 8.593480 };
@@ -263,7 +264,14 @@ export default function DriverDashboard() {
   useEffect(() => {
     if (!rideId || rideEndedRef.current) return;
 
-    const watcher = navigator.geolocation.watchPosition(
+    /* watchPosition() liefert die Watcher-ID in der nativen App per Promise
+       statt sofort synchron wie im Browser (siehe lib/geolocation.ts) - ein
+       Ref haelt sie fest, damit das Aufraeumen unten die richtige ID findet,
+       auch wenn der Effekt schon vor Ankunft der ID wieder abgebaut wird. */
+    let cancelled = false;
+    let watcherId: string | number | null = null;
+
+    watchPosition(
       async (pos) => {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
@@ -324,9 +332,15 @@ export default function DriverDashboard() {
         }
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 }
-    );
+    ).then((id) => {
+      if (cancelled) clearWatch(id);
+      else watcherId = id;
+    });
 
-    return () => navigator.geolocation.clearWatch(watcher);
+    return () => {
+      cancelled = true;
+      if (watcherId !== null) clearWatch(watcherId);
+    };
     /* handleEndRide steht bewusst NICHT in den Abhaengigkeiten: Die Funktion
        arbeitet ausschliesslich mit Refs und Zustands-Setzern, ist also nie
        veraltet. Nimmt man sie auf, wird der GPS-Waechter bei jedem Rendern

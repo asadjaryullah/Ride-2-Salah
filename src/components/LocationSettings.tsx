@@ -5,27 +5,28 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Check, XCircle, AlertTriangle } from "lucide-react";
 import { Capacitor } from '@capacitor/core';
 import { AppSettings } from '@/lib/app-settings';
+import { checkLocationPermission, getCurrentPosition } from '@/lib/geolocation';
 
 export default function LocationSettings() {
   const [permission, setPermission] = useState<PermissionState | 'unknown'>('unknown');
 
   useEffect(() => {
-    // Prüfen, wie der aktuelle Status ist
-    if (navigator.permissions && navigator.permissions.query) {
+    // navigator.permissions.query('geolocation') ist in der nativen
+    // WebView nicht zuverlaessig - checkLocationPermission() fragt dort
+    // stattdessen ueber das Capacitor-Plugin, das den echten Status kennt.
+    checkLocationPermission().then(setPermission);
+
+    if (!Capacitor.isNativePlatform() && navigator.permissions?.query) {
       navigator.permissions.query({ name: 'geolocation' }).then((result) => {
-        setPermission(result.state);
-        // Lauschen, falls der User es in den Einstellungen ändert
-        result.onchange = () => {
-          setPermission(result.state);
-        };
+        result.onchange = () => setPermission(result.state);
       });
     }
   }, []);
 
   const askForLocation = () => {
-    // Wir versuchen einfach, die Position zu holen. 
+    // Wir versuchen einfach, die Position zu holen.
     // Wenn "prompt" (Fragen) eingestellt ist, kommt das Popup.
-    navigator.geolocation.getCurrentPosition(
+    getCurrentPosition(
       () => setPermission('granted'),
       () => setPermission('denied')
     );

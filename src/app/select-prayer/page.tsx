@@ -15,6 +15,8 @@ import { todayBerlin } from '@/lib/date';
 import { isMainAdmin } from "@/lib/admin";
 import { hapticSuccess } from "@/lib/haptics";
 import { shareText } from "@/lib/share";
+import { getCurrentPosition } from "@/lib/geolocation";
+import { Capacitor } from '@capacitor/core';
 
 
 const getIcon = (id: string) => {
@@ -225,9 +227,9 @@ function SelectPrayerContent() {
 
     if (role === 'driver') {
       setCreatingRide(true);
-      if (!navigator.geolocation) { toast.error("GPS nicht verfügbar."); setCreatingRide(false); return; }
+      if (!navigator.geolocation && !Capacitor.isNativePlatform()) { toast.error("GPS nicht verfügbar."); setCreatingRide(false); return; }
 
-      navigator.geolocation.getCurrentPosition(
+      getCurrentPosition(
         async (position) => {
           const lat = position.coords.latitude;
           const lon = position.coords.longitude;

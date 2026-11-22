@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, Phone, XCircle, Loader2, MessageCircle, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { openWhatsAppChat } from '@/lib/share';
+import { watchPosition, clearWatch } from '@/lib/geolocation';
 
 const MAP_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "";
 const MOSQUE_LOCATION = { lat: 49.685590, lng: 8.593480 };
@@ -73,12 +74,13 @@ function PassengerDashboardContent() {
   useEffect(() => {
     if (!rideId) return;
 
-    let watcherId: number | null = null;
+    let cancelled = false;
+    let watcherId: string | number | null = null;
 
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
+      if (!user || cancelled) return;
 
-      watcherId = navigator.geolocation.watchPosition(
+      watchPosition(
         async (pos) => {
           const lat = pos.coords.latitude;
           const lon = pos.coords.longitude;
@@ -97,11 +99,15 @@ function PassengerDashboardContent() {
           }
         },
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 5000 }
-      );
+      ).then((id) => {
+        if (cancelled) clearWatch(id);
+        else watcherId = id;
+      });
     });
 
     return () => {
-      if (watcherId !== null) navigator.geolocation.clearWatch(watcherId);
+      cancelled = true;
+      if (watcherId !== null) clearWatch(watcherId);
     };
   }, [rideId]);
 

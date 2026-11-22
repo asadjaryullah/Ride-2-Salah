@@ -26,6 +26,8 @@
 	<true/>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Ride 2 Salah braucht deinen Standort, damit Fahrer und Mitfahrer sich zum Gebet finden können.</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
