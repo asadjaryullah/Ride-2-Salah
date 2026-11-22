@@ -18,6 +18,15 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Rueckkehr aus dem Google-Login: ohne dieses eigene URL-Schema
+                 landet der OAuth-Rücksprung im System-Browser statt in der
+                 App, ohne Weg zurueck - siehe DeepLinkHandler.tsx. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="app.ride2salah.mobile" />
+            </intent-filter>
         </activity>
 
         <provider

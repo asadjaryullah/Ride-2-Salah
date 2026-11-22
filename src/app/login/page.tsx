@@ -5,6 +5,8 @@ import { useTransitionRouter } from 'next-view-transitions';
 import { supabase } from '@/lib/supabase';
 import { Loader2, Mail, User, Phone, BadgeInfo } from "lucide-react";
 import { toast } from "sonner";
+import { Capacitor } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
 
 export default function LoginPage() {
   const router = useTransitionRouter();
@@ -21,6 +23,27 @@ export default function LoginPage() {
   const [otp, setOtp] = useState('');
 
   const handleGoogleLogin = async () => {
+    /* In der nativen App muss der Rücksprung auf das eigene URL-Schema
+       (app.ride2salah.mobile://...) zeigen, nicht auf die normale
+       Web-Adresse - sonst landet man nach Google nur im System-Browser,
+       ohne dass die App davon erfährt (siehe DeepLinkHandler.tsx). Den
+       Login-Bildschirm selbst öffnen wir über Capacitors In-App-Browser
+       (skipBrowserRedirect), damit es sich wie Teil der App anfühlt statt
+       wie ein Appwechsel. */
+    if (Capacitor.isNativePlatform()) {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'app.ride2salah.mobile://auth/callback',
+          queryParams: { access_type: 'offline', prompt: 'consent' },
+          skipBrowserRedirect: true,
+        },
+      });
+      if (error) { toast.error("Google Login fehlgeschlagen: " + error.message); return; }
+      if (data?.url) await Browser.open({ url: data.url });
+      return;
+    }
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {

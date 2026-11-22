@@ -11,6 +11,7 @@ import MosqueDetector from "@/components/MosqueDetector";
 import InstallPrompt from "@/components/InstallPrompt";
 import PushManager from "@/components/PushManager";
 import NativePushManager from "@/components/NativePushManager";
+import DeepLinkHandler from "@/components/DeepLinkHandler";
 
 // Provider
 import { AuthProvider } from "@/providers/AuthProvider";
@@ -94,6 +95,7 @@ export default function RootLayout({
           {/* Background services */}
           <PushManager />
           <NativePushManager />
+          <DeepLinkHandler />
           <InstallPrompt />
           <MosqueDetector />
 
