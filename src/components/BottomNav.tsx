@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useTransitionRouter } from 'next-view-transitions';
 import { Home, Car, CalendarDays, UserRound, Navigation, BookOpen } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { todayBerlin } from '@/lib/date';
 
 const HIDDEN_PATHS = [
   '/login',
@@ -26,15 +27,37 @@ export default function BottomNav() {
   const dragStartY = useRef(0);
   const dragStartTime = useRef(0);
 
+  /* Aktive Fahrt heute (als Fahrer oder Mitfahrer) - damit der "Fahrt"-Knopf
+     unten direkt zur eigenen Uebersicht springt, statt immer wieder dieselbe
+     Rollenauswahl zu zeigen, die man fuer heute schon getroffen hat. Gleiche
+     Abfrage wie auf der Startseite (page.tsx), hier nochmal, weil BottomNav
+     im Layout global sitzt und keinen Zugriff auf den Zustand der Startseite
+     hat. */
+  const [activeRideRoute, setActiveRideRoute] = useState<string | null>(null);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsLoggedIn(!!session?.user);
+      if (session?.user) loadActiveRide(session.user.id);
     });
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       setIsLoggedIn(!!session?.user);
+      if (session?.user) loadActiveRide(session.user.id);
+      else setActiveRideRoute(null);
     });
     return () => subscription.unsubscribe();
   }, []);
+
+  const loadActiveRide = async (userId: string) => {
+    const today = todayBerlin();
+    const [{ data: driverRide }, { data: booking }] = await Promise.all([
+      supabase.from('rides').select('id').eq('driver_id', userId).eq('status', 'active').eq('ride_date', today).limit(1).maybeSingle(),
+      supabase.from('bookings').select('ride_id, rides!inner(status, ride_date)').eq('passenger_id', userId).eq('status', 'accepted').eq('rides.status', 'active').eq('rides.ride_date', today).limit(1).maybeSingle(),
+    ]);
+    if (driverRide) setActiveRideRoute('/driver/dashboard');
+    else if (booking) setActiveRideRoute(`/passenger/dashboard?rideId=${booking.ride_id}`);
+    else setActiveRideRoute(null);
+  };
 
   // Read query params without useSearchParams to avoid Suspense requirement
   useEffect(() => {
@@ -59,6 +82,15 @@ export default function BottomNav() {
     } else {
       setActiveTab('');
     }
+
+    // Zurueck auf der Startseite ist der natuerliche Punkt, an dem eine
+    // gerade abgeschlossene/abgebrochene Fahrt nicht mehr "aktiv" sein
+    // sollte - hier erneut pruefen, statt nur bei An-/Abmeldung.
+    if (pathname === '/') {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) loadActiveRide(session.user.id);
+      });
+    }
   }, [pathname]);
 
   if (!isLoggedIn) return null;
@@ -66,7 +98,14 @@ export default function BottomNav() {
 
   const handleTabPress = (id: string, href: string | null) => {
     if (id === 'fahrt') {
-      setShowFahrtSheet(true);
+      // Fuer heute schon eine Rolle gewaehlt? Dann direkt zur eigenen
+      // Uebersicht, statt die Auswahl (Fahrer/Mitfahrer) nochmal zu zeigen,
+      // die fuer heute bereits beantwortet ist.
+      if (activeRideRoute) {
+        router.push(activeRideRoute);
+      } else {
+        setShowFahrtSheet(true);
+      }
     } else if (href) {
       // Zikr und Termine teilen den Pfad /history — der Effekt oben laeuft dann
       // nicht, weil sich nur der Parameter aendert. Deshalb hier direkt setzen,

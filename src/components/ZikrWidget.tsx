@@ -78,7 +78,17 @@ function Ring({ color, percent, label }: { color: string; percent: number; label
             strokeLinecap="round"
             style={{ transition: 'stroke-dashoffset 0.8s ease' }} />
         </svg>
-        <span className="absolute text-[9px] font-bold" style={{ color: 'var(--app-text2)' }}>
+        {/* absolute + ein Flex-Elternteil zentrieren sich nicht gegenseitig
+            (justify-content/align-items wirken nur auf Elemente im
+            normalen Fluss) - bisher stand der Text dadurch nicht wirklich
+            mittig, bei "100%" (ein Zeichen mehr als sonst) reichte das, um
+            die fuehrende "1" aus dem sichtbaren Bereich zu schieben:
+            "00%" statt "100%". Explizite Zentrierung behebt das fuer jede
+            Textlaenge. */}
+        <span
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] font-bold whitespace-nowrap"
+          style={{ color: 'var(--app-text2)' }}
+        >
           {Math.round(percent)}%
         </span>
       </div>

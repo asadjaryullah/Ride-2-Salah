@@ -8,6 +8,7 @@ import { Loader2, AlertTriangle, ArrowRight, Calendar, Settings, Bell, Graduatio
 import { LESSON_KIND_LABEL, formatLessonDate, loadLessonProgress } from '@/lib/lessons';
 import ZikrWidget from '@/components/ZikrWidget';
 import TodayCard from '@/components/TodayCard';
+import PullToRefresh from '@/components/PullToRefresh';
 import OnboardingTour from '@/components/OnboardingTour';
 import { toast } from 'sonner';
 import { todayBerlin } from '@/lib/date';
@@ -61,6 +62,7 @@ export default function HomePage() {
   const router = useTransitionRouter();
 
   const [loading, setLoading] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [user, setUser] = useState<any>(null);
   const [notifPerm, setNotifPerm] = useState<string>('granted'); // default: nicht anzeigen
   const [profile, setProfile] = useState<any>(null);
@@ -131,7 +133,11 @@ export default function HomePage() {
           // Karte stillschweigend, statt die neueste Fahrt zu zeigen.
           supabase.from('rides').select('id, prayer_id, prayer_time').eq('driver_id', session.user.id).eq('status', 'active').eq('ride_date', today).order('created_at', { ascending: false }).limit(1).maybeSingle(),
           supabase.from('bookings').select('ride_id, rides!inner(id, status, ride_date, prayer_id, prayer_time)').eq('passenger_id', session.user.id).eq('status', 'accepted').eq('rides.status', 'active').eq('rides.ride_date', today).order('created_at', { ascending: false }).limit(1).maybeSingle(),
-          supabase.from('mosque_events').select('id,title,event_date').gte('event_date', new Date().toISOString()).order('event_date', { ascending: true }).limit(3),
+          // Nur der naechste Termin, nicht mehrere: Die Startseite ist der
+          // Kurzblick, die volle Liste gehoert exklusiv in den Termine-Tab -
+          // beide zeigten vorher dieselben bis zu drei Eintraege, das wirkte
+          // redundant ("doppelt gemoppelt").
+          supabase.from('mosque_events').select('id,title,event_date').gte('event_date', new Date().toISOString()).order('event_date', { ascending: true }).limit(1),
           supabase.from('quick_links').select('id,title,url,emoji,sort_order').eq('is_active', true).order('sort_order', { ascending: true }),
           supabase.from('prayer_times').select('id,name,time,sort_order').order('sort_order', { ascending: true }),
           // Nur die neueste veroeffentlichte Lektion, mit Karten-IDs fuer den Lernstand
@@ -206,7 +212,7 @@ export default function HomePage() {
       clearTimeout(safetyTimer);
       subscription.unsubscribe();
     };
-  }, [router]);
+  }, [router, refreshKey]);
 
   /* Leitet die Werte für das gewählte Gebet aus dem Tageszustand ab — ohne
      Netzwerk, damit das Umschalten sofort reagiert. */
@@ -447,6 +453,8 @@ export default function HomePage() {
           pro Geraet (localStorage), rendert also fuer alle danach nichts */}
       <OnboardingTour />
 
+      <PullToRefresh onRefresh={() => setRefreshKey(k => k + 1)}>
+
       {/* ── Header ── */}
       <div className="stagger-1 flex items-center justify-between pt-1">
         <p className="text-[11px] font-bold uppercase tracking-[0.15em]"
@@ -605,7 +613,8 @@ export default function HomePage() {
         <div className="flex items-center justify-between mb-3">
           <p className="text-[11px] font-bold uppercase tracking-[0.1em] flex items-center gap-1.5"
             style={{ color: 'var(--app-text2)' }}>
-            <Calendar size={12} style={{ color: 'var(--app-text3)' }} /> Termine
+            <Calendar size={12} style={{ color: 'var(--app-text3)' }} />
+            {upcomingEvents.length > 0 ? 'Nächster Termin' : 'Termine'}
           </p>
           <ArrowRight size={14} style={{ color: 'var(--app-text3)' }} />
         </div>
@@ -814,6 +823,7 @@ export default function HomePage() {
           </div>
         );
       })()}
+      </PullToRefresh>
     </main>
   );
 }
