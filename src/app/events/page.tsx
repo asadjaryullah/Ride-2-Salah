@@ -1,10 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useTransitionRouter } from 'next-view-transitions';
 import { supabase } from '@/lib/supabase';
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, Loader2, ArrowLeft, MapPin, Smartphone, Globe } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, MapPin, Smartphone, Globe } from "lucide-react";
 import { Browser } from '@capacitor/browser';
 import { Capacitor } from '@capacitor/core';
 
@@ -40,8 +39,6 @@ function getTopOrgDots(dayEvents: any[]) {
 }
 
 export default function EventsPage() {
-  const router = useTransitionRouter();
-
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState<any[]>([]);
   const [viewDate, setViewDate] = useState(new Date());
@@ -164,11 +161,8 @@ export default function EventsPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center p-4 pb-nav-safe" style={{ background: 'var(--app-bg)' }}>
-      <div className="w-full max-w-md flex items-center mb-6">
-        <Button variant="ghost" size="icon" onClick={() => router.push('/')}>
-          <ArrowLeft className="h-6 w-6" style={{ color: 'var(--app-text2)' }} />
-        </Button>
-        <h1 className="text-xl font-bold ml-2" style={{ color: 'var(--app-text)' }}>Termine</h1>
+      <div className="w-full max-w-md mb-6">
+        <h1 className="text-xl font-bold" style={{ color: 'var(--app-text)' }}>Termine</h1>
       </div>
 
       {loading ? (

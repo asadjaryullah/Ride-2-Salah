@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import {
-  User, Phone, Save, Loader2, ArrowLeft, Calendar, BadgeInfo, Lock, MessageSquareWarning, List, LogOut,
+  User, Phone, Save, Loader2, Calendar, BadgeInfo, Lock, MessageSquareWarning, List, LogOut,
   Settings, BarChart2, TrendingUp, Car, Footprints, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -120,15 +120,8 @@ export default function ProfilePage() {
   return (
     <main className="min-h-screen flex flex-col items-center p-4 pb-nav-safe" style={{ background: 'var(--app-bg)' }}>
 
-      <div className="w-full max-w-sm flex items-center mb-4 mt-4">
-        <Button variant="ghost" size="sm" onClick={() => router.push('/')}
-          style={{ color: 'var(--app-text2)' }}>
-          <ArrowLeft className="mr-2 h-4 w-4" /> Zurück
-        </Button>
-      </div>
-
       {/* PROFIL-HEADER */}
-      <div className="w-full max-w-sm flex flex-col items-center mb-6">
+      <div className="w-full max-w-sm flex flex-col items-center mb-6 mt-4">
         <div
           className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-black mb-3"
           style={{ background: 'var(--app-gold-dim)', color: 'var(--app-gold)', border: '2px solid var(--app-gold)' }}

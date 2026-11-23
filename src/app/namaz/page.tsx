@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useTransitionRouter } from 'next-view-transitions';
 import { supabase } from '@/lib/supabase';
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Loader2, Check, RotateCcw, GraduationCap, ChevronRight } from "lucide-react";
+import { Loader2, Check, RotateCcw, GraduationCap, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { todayBerlin } from '@/lib/date';
 
@@ -241,11 +241,8 @@ export default function ZikrPage() {
 
   return (
     <main className="min-h-screen flex flex-col items-center p-4 pb-nav-safe" style={{ background: 'var(--app-bg)' }}>
-      <div className="w-full max-w-md flex items-center mb-6">
-        <button onClick={() => router.push('/')} className="p-2 -ml-2 rounded-full" aria-label="Zurück">
-          <ArrowLeft className="h-6 w-6" style={{ color: 'var(--app-text2)' }} />
-        </button>
-        <h1 className="text-xl font-bold ml-2" style={{ color: 'var(--app-text)' }}>Zikr</h1>
+      <div className="w-full max-w-md mb-6">
+        <h1 className="text-xl font-bold" style={{ color: 'var(--app-text)' }}>Zikr</h1>
       </div>
 
       {loading ? (
