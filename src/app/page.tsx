@@ -387,26 +387,12 @@ export default function HomePage() {
       <main className="min-h-screen flex flex-col items-center justify-center p-6 relative overflow-hidden"
         style={{ background: 'var(--app-bg)' }}>
 
-        {/* Glow orbs */}
-        <div style={{
-          position: 'absolute', top: -80, left: '50%', transform: 'translateX(-50%)',
-          width: 320, height: 320, borderRadius: '50%',
-          background: 'radial-gradient(circle, var(--app-gold-glow) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }} />
-        <div style={{
-          position: 'absolute', bottom: 60, left: -40,
-          width: 200, height: 200, borderRadius: '50%',
-          background: 'radial-gradient(circle, var(--app-emerald-dim) 0%, transparent 70%)',
-          pointerEvents: 'none',
-        }} />
-
         <div className="flex flex-col items-center text-center relative z-10 w-full max-w-xs">
 
           {/* Mosque label */}
           <div className="stagger-1 mb-2">
-            <p className="text-[11px] font-bold uppercase tracking-[0.25em]" style={{ color: 'var(--app-gold)' }}>
-              Bashier Moschee · Bensheim
+            <p className="text-sm font-semibold" style={{ color: 'var(--app-gold)' }}>
+              Bashier Moschee Bensheim
             </p>
           </div>
 
@@ -434,7 +420,7 @@ export default function HomePage() {
                 style={{ color: 'var(--app-gold)', direction: 'rtl', textShadow: '0 0 30px var(--app-gold-glow)' }}>
                 حَيَّ عَلَىٰ ٱلصَّلَاةِ
               </p>
-              <p className="text-center text-[9px] uppercase tracking-[0.22em] mt-1"
+              <p className="text-center text-xs mt-1"
                 style={{ color: 'var(--app-text2)' }}>
                 „Kommt zum Gebet"
               </p>
@@ -444,7 +430,7 @@ export default function HomePage() {
                 style={{ color: 'var(--app-gold)', direction: 'rtl', textShadow: '0 0 30px var(--app-gold-glow)' }}>
                 حَيَّ عَلَىٰ ٱلْفَلَاحِ
               </p>
-              <p className="text-center text-[9px] uppercase tracking-[0.22em] mt-1"
+              <p className="text-center text-xs mt-1"
                 style={{ color: 'var(--app-text2)' }}>
                 „Kommt zum Erfolg"
               </p>
@@ -492,8 +478,7 @@ export default function HomePage() {
 
       {/* ── Header ── */}
       <div className="stagger-1 flex items-center justify-between pt-1">
-        <p className="text-[11px] font-bold uppercase tracking-[0.15em]"
-          style={{ color: 'var(--app-gold)' }}>
+        <p className="text-base font-semibold" style={{ color: 'var(--app-text)' }}>
           Salam, {firstName}
         </p>
         <div className="flex items-center gap-2.5">
@@ -522,9 +507,8 @@ export default function HomePage() {
             style={{ fontFamily: 'var(--font-amiri)', color: 'var(--app-gold)', direction: 'rtl', textShadow: '0 0 20px var(--app-gold-glow)' }}>
             حَيَّ عَلَىٰ ٱلصَّلَاةِ · حَيَّ عَلَىٰ ٱلْفَلَاحِ
           </p>
-          <p className="text-[10px] uppercase tracking-[0.18em] text-center"
-            style={{ color: 'var(--app-text2)' }}>
-            „Kommt zum Gebet · Kommt zum Erfolg"
+          <p className="text-xs text-center" style={{ color: 'var(--app-text2)' }}>
+            „Kommt zum Gebet, kommt zum Erfolg"
           </p>
         </div>
       </div>
@@ -647,9 +631,9 @@ export default function HomePage() {
       <div onClick={() => router.push('/events')}
         className="stagger-5 app-card app-card-hover-blue p-4 cursor-pointer">
         <div className="flex items-center justify-between mb-3">
-          <p className="text-[11px] font-bold uppercase tracking-[0.1em] flex items-center gap-1.5"
+          <p className="text-sm font-semibold flex items-center gap-1.5"
             style={{ color: 'var(--app-text2)' }}>
-            <Calendar size={12} style={{ color: 'var(--app-text3)' }} />
+            <Calendar size={14} style={{ color: 'var(--app-text3)' }} />
             {upcomingEvents.length > 0 ? 'Nächster Termin' : 'Termine'}
           </p>
           <ArrowRight size={14} style={{ color: 'var(--app-text3)' }} />
@@ -691,9 +675,9 @@ export default function HomePage() {
         <div onClick={() => router.push(`/lessons/${latestLesson.id}`)}
           className="stagger-5 app-card app-card-hover p-4 cursor-pointer">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-[11px] font-bold uppercase tracking-[0.1em] flex items-center gap-1.5"
+            <p className="text-sm font-semibold flex items-center gap-1.5"
               style={{ color: 'var(--app-text2)' }}>
-              <BookOpen size={12} style={{ color: 'var(--app-text3)' }} />
+              <BookOpen size={14} style={{ color: 'var(--app-text3)' }} />
               {LESSON_KIND_LABEL[latestLesson.kind]} vom {formatLessonDate(latestLesson.delivered_on)}
             </p>
             <ArrowRight size={14} style={{ color: 'var(--app-text3)' }} />

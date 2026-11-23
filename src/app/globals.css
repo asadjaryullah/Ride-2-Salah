@@ -36,8 +36,11 @@
   --app-gold:        #a07820;
   --app-gold-dim:    rgba(160,120,32,0.10);
   --app-gold-glow:   rgba(160,120,32,0.20);
-  --app-emerald:     #16a06a;
-  --app-emerald-dim: rgba(22,160,106,0.10);
+  /* Das tatsaechliche Markengruen aus dem Logo/Jubilaeumsbadge (#005335),
+     nicht das generische helle "Erfolgs-Gruen", das hier vorher stand und
+     mit der eigenen Marke nichts zu tun hatte. */
+  --app-emerald:     #0a5c3e;
+  --app-emerald-dim: rgba(10,92,62,0.10);
   --app-rose:        #c0396e;
   --app-blue:        #3a5fd9;
   --app-blue-dim:    rgba(58,95,217,0.10);
@@ -83,8 +86,8 @@
     --app-gold:        #C9A23C;
     --app-gold-dim:    rgba(201,162,60,0.15);
     --app-gold-glow:   rgba(201,162,60,0.30);
-    --app-emerald:     #22D38A;
-    --app-emerald-dim: rgba(34,211,138,0.12);
+    --app-emerald:     #3BA376;
+    --app-emerald-dim: rgba(59,163,118,0.14);
     --app-rose:        #F06292;
     --app-blue:        #5B7FFF;
     --app-blue-dim:    rgba(91,127,255,0.12);
@@ -128,8 +131,8 @@
   --app-gold:        #C9A23C;
   --app-gold-dim:    rgba(201,162,60,0.15);
   --app-gold-glow:   rgba(201,162,60,0.30);
-  --app-emerald:     #22D38A;
-  --app-emerald-dim: rgba(34,211,138,0.12);
+  --app-emerald:     #3BA376;
+  --app-emerald-dim: rgba(59,163,118,0.14);
   --app-rose:        #F06292;
   --app-blue:        #5B7FFF;
   --app-blue-dim:    rgba(91,127,255,0.12);

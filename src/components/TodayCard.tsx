@@ -100,9 +100,9 @@ export default function TodayCard(p: Props) {
       <div className="relative z-10">
         {/* Kopf */}
         <div className="flex items-center justify-between gap-2 mb-2">
-          <p className="text-[10px] uppercase tracking-widest font-bold"
+          <p className="text-sm font-semibold"
             style={{ color: isClose ? 'var(--app-emerald)' : isNext ? 'var(--app-text2)' : 'var(--app-gold)' }}>
-            {isClose ? '🕌 Gleich ist Gebet' : isNext ? 'Nächstes Gebet · heute' : 'Vorausplanen · heute'}
+            {isClose ? '🕌 Gleich ist Gebet' : isNext ? 'Nächstes Gebet heute' : 'Für später planen'}
           </p>
           {!isNext && p.nextPrayer && (
             <button
@@ -177,10 +177,10 @@ export default function TodayCard(p: Props) {
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: 'var(--app-gold)' }} />
                       <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: 'var(--app-gold)' }} />
                     </span>
-                    <span className="text-[9px] font-black uppercase tracking-[0.15em]" style={{ color: 'var(--app-gold)' }}>Aktive Fahrt · Live</span>
+                    <span className="text-[9px] font-bold" style={{ color: 'var(--app-gold)' }}>Fahrt läuft</span>
                   </span>
                   <p className="font-extrabold text-base leading-tight" style={{ color: 'var(--app-gold)' }}>Du bist Fahrer</p>
-                  <p className="text-[11px] mt-0.5" style={{ color: 'var(--app-text2)' }}>Navigation &amp; Mitfahrer ansehen →</p>
+                  <p className="text-[11px] mt-0.5" style={{ color: 'var(--app-text2)' }}>Navigation &amp; Mitfahrer ansehen</p>
                 </div>
                 <span className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                   style={{ background: 'var(--app-gold-dim)', border: '1px solid var(--app-gold)' }}>
@@ -199,10 +199,10 @@ export default function TodayCard(p: Props) {
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ background: 'var(--app-emerald)' }} />
                       <span className="relative inline-flex rounded-full h-2 w-2" style={{ background: 'var(--app-emerald)' }} />
                     </span>
-                    <span className="text-[9px] font-black uppercase tracking-[0.15em]" style={{ color: 'var(--app-emerald)' }}>Aktive Fahrt · Live</span>
+                    <span className="text-[9px] font-bold" style={{ color: 'var(--app-emerald)' }}>Fahrt läuft</span>
                   </span>
                   <p className="font-extrabold text-base leading-tight" style={{ color: 'var(--app-emerald)' }}>Du fährst mit</p>
-                  <p className="text-[11px] mt-0.5" style={{ color: 'var(--app-text2)' }}>Fahrer-Standort &amp; Details →</p>
+                  <p className="text-[11px] mt-0.5" style={{ color: 'var(--app-text2)' }}>Fahrer-Standort &amp; Details</p>
                 </div>
                 <span className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
                   style={{ background: 'var(--app-emerald-dim)', border: '1px solid var(--app-emerald)' }}>
@@ -226,7 +226,7 @@ export default function TodayCard(p: Props) {
             {/* Wer faehrt - direkt sichtbar, nicht erst nach Klick auf "Mitfahren" */}
             {p.availableDrivers.length > 0 && (
               <div className="rounded-xl p-2.5 space-y-1.5" style={{ background: 'var(--app-gold-dim)', border: '1px solid var(--app-gold)' }}>
-                <p className="text-[9px] font-black uppercase tracking-widest" style={{ color: 'var(--app-gold)' }}>
+                <p className="text-xs font-bold" style={{ color: 'var(--app-gold)' }}>
                   Fährt zum {shown.name}
                 </p>
                 {p.availableDrivers.map((d, i) => (
