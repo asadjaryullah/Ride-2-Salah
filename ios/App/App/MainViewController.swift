@@ -11,11 +11,20 @@ class MainViewController: CAPBridgeViewController {
     override func capacitorDidLoad() {
         webView?.allowsBackForwardNavigationGestures = true
 
-        // Haengt die native Bottom-Bar genau einmal an, sobald die
-        // WebView/View-Hierarchie sicher bereit ist - vom Plugin selbst aus
-        // (load()) waere das zu frueh.
-        if let barPlugin = bridge?.plugin(withName: "NativeBottomBar") as? NativeBottomBarPlugin {
-            barPlugin.attach(to: view)
-        }
+        /* Eigene, lokale Plugins (nicht aus einem npm-Paket) landen NICHT von
+           selbst in capacitor.config.json's packageClassList - das generiert
+           `npx cap sync` ausschliesslich aus den ios/-Ordnern installierter
+           npm-Capacitor-Plugins (siehe @capacitor/cli/dist/util/iosplugin.js).
+           bridge?.plugin(withName:) fand AppSettingsPlugin/NativeBottomBarPlugin
+           deshalb nie - beide liefen nie wirklich, obwohl sie kompiliert und
+           verlinkt waren. registerPluginInstance(_:) ist der dafuer vorgesehene
+           Weg, eine Plugin-Instanz unabhaengig von dieser Auto-Erkennung
+           anzumelden, und funktioniert unabhaengig vom autoRegisterPlugins-Schalter
+           (anders als registerPluginType(_:), das dabei ein No-Op waere). */
+        let barPlugin = NativeBottomBarPlugin()
+        bridge?.registerPluginInstance(barPlugin)
+        barPlugin.attach(to: view)
+
+        bridge?.registerPluginInstance(AppSettingsPlugin())
     }
 }

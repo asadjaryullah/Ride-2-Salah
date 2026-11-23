@@ -4,9 +4,14 @@ import { useEffect, useState, useRef } from 'react';
 import { useTransitionRouter } from 'next-view-transitions';
 import { supabase } from '@/lib/supabase';
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Loader2, Check, RotateCcw, Clock } from "lucide-react";
+import { ArrowLeft, Loader2, Check, RotateCcw, Clock, GraduationCap, ArrowRight } from "lucide-react";
 import { toast } from "sonner";
 import { todayBerlin } from '@/lib/date';
+
+// Gleiche Keys wie in src/app/learn/page.tsx - rein lokal (localStorage),
+// keine eigene DB-Tabelle dafuer.
+const LEARN_WORDS_KEY = 'namaz_words_v4';
+const LEARN_PROGRESS_KEY = 'namaz_learn_v4';
 
 // --- KONFIGURATION ZIKR (unveraendert aus dem frueheren /history uebernommen) ---
 const ZIKR_LIST = [
@@ -67,6 +72,20 @@ export default function NamazPage() {
   const [zikrData, setZikrData] = useState<any>({ zikr1_count: 0, zikr2_count: 0, zikr3_count: 0 });
   const [todayLogId, setTodayLogId] = useState<string | null>(null);
   const [dailyQuote, setDailyQuote] = useState<any | null>(null);
+
+  // Lernfortschritt "Namaz mit Uebersetzung" (/learn) - rein lokal im
+  // Browser gespeichert, hier nur fuer die Fortschrittsanzeige ausgelesen.
+  const [learnStats, setLearnStats] = useState({ learned: 0, total: 103 });
+  useEffect(() => {
+    try {
+      const wordsRaw = localStorage.getItem(LEARN_WORDS_KEY);
+      const total = wordsRaw ? (JSON.parse(wordsRaw).length || 103) : 103;
+      const progressRaw = localStorage.getItem(LEARN_PROGRESS_KEY);
+      const progress = progressRaw ? JSON.parse(progressRaw) : {};
+      const learned = Object.values(progress).filter((p: any) => p?.learned).length;
+      setLearnStats({ learned, total });
+    } catch {}
+  }, []);
 
   // Live-Uhrzeit in Berlin-Zeitzone, jede Minute aktualisiert - reicht fuer
   // einen Countdown in Minuten, eine Sekunden-Genauigkeit braucht niemand hier.
@@ -339,6 +358,32 @@ export default function NamazPage() {
                 </Card>
               );
             })}
+          </div>
+
+          {/* NAMAZ MIT UEBERSETZUNG - Lernfortschritt */}
+          <div
+            onClick={() => router.push('/learn')}
+            className="rounded-2xl p-4 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-transform"
+            style={{ background: 'var(--app-blue-dim)', border: '1px solid var(--app-blue)' }}
+          >
+            <div className="p-2.5 rounded-full shrink-0" style={{ background: 'rgba(91,127,255,0.15)' }}>
+              <GraduationCap size={20} style={{ color: 'var(--app-blue)' }} />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-sm" style={{ color: 'var(--app-blue)' }}>Namaz mit Übersetzung</p>
+              <div className="flex items-center gap-2 mt-1">
+                <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--app-surface2)' }}>
+                  <div
+                    className="h-full transition-[width] duration-300"
+                    style={{ width: `${Math.min((learnStats.learned / learnStats.total) * 100, 100)}%`, background: 'var(--app-blue)' }}
+                  />
+                </div>
+                <span className="text-xs font-semibold shrink-0" style={{ color: 'var(--app-text2)' }}>
+                  {learnStats.learned}/{learnStats.total}
+                </span>
+              </div>
+            </div>
+            <ArrowRight size={16} className="shrink-0" style={{ color: 'var(--app-blue)' }} />
           </div>
         </div>
       )}
