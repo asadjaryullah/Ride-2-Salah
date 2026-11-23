@@ -339,15 +339,19 @@ export default function HomePage() {
        zwei verschiedene Bildschirme wirkt, sondern wie ein durchgehendes
        Einblenden. */
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-3" style={{ background: 'var(--app-bg)' }}>
-        <div className="relative w-20 h-20 animate-float">
-          <Image src="/icon.png" alt="Logo" fill className="object-contain"
-            style={{ filter: 'drop-shadow(0 0 20px var(--app-gold-glow))' }} />
+      <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: 'var(--app-bg)' }}>
+        <div className="relative w-24 h-24 flex items-center justify-center">
+          {/* Radar-Puls statt generischem Spinner - "es laedt" kommt aus der
+             Marke selbst statt aus einem beliebigen Web-UI-Element. */}
+          <div className="absolute inset-0 rounded-full animate-pulse-ring" style={{ background: 'var(--app-gold)' }} />
+          <div className="relative w-16 h-16 animate-float">
+            <Image src="/icon.png" alt="Logo" fill className="object-contain"
+              style={{ filter: 'drop-shadow(0 0 20px var(--app-gold-glow))' }} />
+          </div>
         </div>
-        <p className="stagger-1 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--app-gold)' }}>
+        <p className="stagger-1 mt-6 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--app-gold)' }}>
           Ride2Salah
         </p>
-        <Loader2 className="animate-spin h-4 w-4 mt-1" style={{ color: 'var(--app-text3)' }} />
       </div>
     );
   }
