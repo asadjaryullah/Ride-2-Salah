@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useTransitionRouter } from 'next-view-transitions';
 import { supabase } from '@/lib/supabase';
 import { Card } from "@/components/ui/card";
-import { ArrowLeft, Loader2, Check, RotateCcw, Clock, GraduationCap, ArrowRight } from "lucide-react";
+import { ArrowLeft, Loader2, Check, RotateCcw, GraduationCap, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import { todayBerlin } from '@/lib/date';
 
@@ -41,34 +41,36 @@ const ZIKR_LIST = [
   }
 ];
 
-type Prayer = { id: string; name: string; time: string };
+/* Gleiches Ring-Muster wie ZikrWidget.tsx auf der Startseite - eigenes
+   Lern-Widget soll sich wie ein Teil derselben App anfuehlen, nicht wie
+   eine andere Komponente mit eigenem Stil. */
+function ProgressRing({ percent }: { percent: number }) {
+  const r = 28, stroke = 5, nr = r - stroke * 2;
+  const circ = nr * 2 * Math.PI;
+  const offset = circ - (percent / 100) * circ;
 
-function minutesUntil(time: string): number {
-  const [h, m] = time.split(':').map(Number);
-  const now = new Date();
-  const nowBerlin = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Berlin' }));
-  const target = new Date(nowBerlin);
-  target.setHours(h, m, 0, 0);
-  let diff = Math.round((target.getTime() - nowBerlin.getTime()) / 60000);
-  if (diff < -5) diff += 24 * 60; // schon vorbei -> naechster Tag, nur fuer Sortierung irrelevant hier
-  return diff;
+  return (
+    <div className="relative flex items-center justify-center shrink-0" style={{ width: r * 2, height: r * 2 }}>
+      <svg width={r * 2} height={r * 2} style={{ transform: 'rotate(-90deg)' }}>
+        <circle cx={r} cy={r} r={nr} fill="transparent" stroke="rgba(128,128,128,0.12)" strokeWidth={stroke} />
+        <circle cx={r} cy={r} r={nr} fill="transparent"
+          stroke="var(--app-blue)" strokeWidth={stroke}
+          strokeDasharray={`${circ} ${circ}`}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          style={{ transition: 'stroke-dashoffset 0.8s ease' }} />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-xs font-black" style={{ color: 'var(--app-blue)' }}>
+        {Math.round(percent)}%
+      </span>
+    </div>
+  );
 }
 
-function formatCountdown(mins: number): string {
-  if (mins < 0) return '';
-  const h = Math.floor(mins / 60);
-  const m = mins % 60;
-  if (h > 0) return `noch ${h} Std ${m} Min`;
-  return `noch ${m} Min`;
-}
-
-export default function NamazPage() {
+export default function ZikrPage() {
   const router = useTransitionRouter();
 
   const [loading, setLoading] = useState(true);
-  const [prayers, setPrayers] = useState<Prayer[]>([]);
-  const [nowHHMM, setNowHHMM] = useState('');
-
   const [zikrData, setZikrData] = useState<any>({ zikr1_count: 0, zikr2_count: 0, zikr3_count: 0 });
   const [todayLogId, setTodayLogId] = useState<string | null>(null);
   const [dailyQuote, setDailyQuote] = useState<any | null>(null);
@@ -87,15 +89,6 @@ export default function NamazPage() {
     } catch {}
   }, []);
 
-  // Live-Uhrzeit in Berlin-Zeitzone, jede Minute aktualisiert - reicht fuer
-  // einen Countdown in Minuten, eine Sekunden-Genauigkeit braucht niemand hier.
-  useEffect(() => {
-    const update = () => setNowHHMM(new Date().toLocaleTimeString('de-DE', { timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit', hour12: false }));
-    update();
-    const interval = setInterval(update, 30_000);
-    return () => clearInterval(interval);
-  }, []);
-
   useEffect(() => {
     try {
       const cached = localStorage.getItem(`zikr_${todayBerlin()}`);
@@ -108,13 +101,10 @@ export default function NamazPage() {
 
       const today = todayBerlin();
 
-      const [{ data: prayerTimesData }, { data: zikrLog, error: zikrErr }, { data: quotesData }] = await Promise.all([
-        supabase.from('prayer_times').select('id,name,time').order('sort_order', { ascending: true }),
+      const [{ data: zikrLog, error: zikrErr }, { data: quotesData }] = await Promise.all([
         supabase.from('zikr_logs').select('*').eq('user_id', user.id).eq('log_date', today).maybeSingle(),
         supabase.from('daily_quotes').select('arabic, translation, source').eq('is_active', true).order('sort_order', { ascending: true }),
       ]);
-
-      if (prayerTimesData) setPrayers(prayerTimesData);
 
       if (zikrErr) {
         console.error('zikr_logs laden:', zikrErr.message);
@@ -247,8 +237,7 @@ export default function NamazPage() {
     });
   };
 
-  const nextIndex = prayers.findIndex(p => p.time > nowHHMM);
-  const nextPrayerId = nextIndex === -1 ? prayers[0]?.id : prayers[nextIndex].id;
+  const learnPercent = Math.min((learnStats.learned / learnStats.total) * 100, 100);
 
   return (
     <main className="min-h-screen flex flex-col items-center p-4 pb-nav-safe" style={{ background: 'var(--app-bg)' }}>
@@ -256,67 +245,33 @@ export default function NamazPage() {
         <button onClick={() => router.push('/')} className="p-2 -ml-2 rounded-full" aria-label="Zurück">
           <ArrowLeft className="h-6 w-6" style={{ color: 'var(--app-text2)' }} />
         </button>
-        <h1 className="text-xl font-bold ml-2" style={{ color: 'var(--app-text)' }}>Namaz</h1>
+        <h1 className="text-xl font-bold ml-2" style={{ color: 'var(--app-text)' }}>Zikr</h1>
       </div>
 
       {loading ? (
         <div className="py-20"><Loader2 className="animate-spin" style={{ color: 'var(--app-text3)' }} /></div>
       ) : (
         <div className="w-full max-w-md space-y-6">
-          {/* GEBETSZEITEN */}
-          <div className="space-y-2">
-            {prayers.map((p) => {
-              const isNext = p.id === nextPrayerId;
-              const mins = minutesUntil(p.time);
-              return (
-                <Card
-                  key={p.id}
-                  className="flex items-center justify-between p-4 rounded-2xl"
-                  style={{
-                    background: isNext ? 'var(--app-gold-dim)' : 'var(--app-card)',
-                    border: `1px solid ${isNext ? 'var(--app-gold)' : 'var(--app-border)'}`,
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-full" style={{ background: isNext ? 'rgba(201,162,60,0.2)' : 'var(--app-surface2)' }}>
-                      <Clock size={16} style={{ color: isNext ? 'var(--app-gold)' : 'var(--app-text3)' }} />
-                    </div>
-                    <div>
-                      <p className="font-bold" style={{ color: isNext ? 'var(--app-gold)' : 'var(--app-text)' }}>{p.name}</p>
-                      {isNext && mins >= 0 && (
-                        <p className="text-xs font-semibold" style={{ color: 'var(--app-gold)' }}>{formatCountdown(mins)}</p>
-                      )}
-                    </div>
-                  </div>
-                  <span className="text-lg font-black" style={{ color: isNext ? 'var(--app-gold)' : 'var(--app-text)' }}>{p.time}</span>
-                </Card>
-              );
-            })}
-          </div>
-
-          {/* ZIKR */}
-          <div className="space-y-4 pt-2">
-            <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--app-text2)' }}>Täglicher Zikr</h2>
-
-            {dailyQuote && (
-              <div className="rounded-2xl p-4" style={{ background: 'var(--app-gold-dim)', border: '1px solid var(--app-gold)' }}>
-                {dailyQuote.arabic && (
-                  <p className="text-xl text-center leading-loose mb-2 font-bold"
-                    style={{ fontFamily: 'var(--font-amiri)', direction: 'rtl', color: 'var(--app-gold)', textShadow: '0 0 20px var(--app-gold-glow)' }}>
-                    {dailyQuote.arabic}
-                  </p>
-                )}
-                <p className="text-sm text-center italic leading-relaxed" style={{ color: 'var(--app-text)' }}>
-                  „{dailyQuote.translation}"
+          {dailyQuote && (
+            <div className="rounded-2xl p-4" style={{ background: 'var(--app-gold-dim)', border: '1px solid var(--app-gold)' }}>
+              {dailyQuote.arabic && (
+                <p className="text-xl text-center leading-loose mb-2 font-bold"
+                  style={{ fontFamily: 'var(--font-amiri)', direction: 'rtl', color: 'var(--app-gold)', textShadow: '0 0 20px var(--app-gold-glow)' }}>
+                  {dailyQuote.arabic}
                 </p>
-                {dailyQuote.source && (
-                  <p className="text-[10px] text-center mt-2 font-bold uppercase tracking-widest" style={{ color: 'var(--app-text3)' }}>
-                    — {dailyQuote.source}
-                  </p>
-                )}
-              </div>
-            )}
+              )}
+              <p className="text-sm text-center italic leading-relaxed" style={{ color: 'var(--app-text)' }}>
+                „{dailyQuote.translation}"
+              </p>
+              {dailyQuote.source && (
+                <p className="text-[10px] text-center mt-2 font-bold uppercase tracking-widest" style={{ color: 'var(--app-text3)' }}>
+                  — {dailyQuote.source}
+                </p>
+              )}
+            </div>
+          )}
 
+          <div className="space-y-4">
             {ZIKR_LIST.map((item) => {
               const count = zikrData[item.key] || 0;
               const isDone = count >= item.target;
@@ -363,27 +318,20 @@ export default function NamazPage() {
           {/* NAMAZ MIT UEBERSETZUNG - Lernfortschritt */}
           <div
             onClick={() => router.push('/learn')}
-            className="rounded-2xl p-4 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-transform"
+            className="rounded-2xl p-4 flex items-center gap-4 cursor-pointer active:scale-[0.98] transition-transform"
             style={{ background: 'var(--app-blue-dim)', border: '1px solid var(--app-blue)' }}
           >
-            <div className="p-2.5 rounded-full shrink-0" style={{ background: 'rgba(91,127,255,0.15)' }}>
-              <GraduationCap size={20} style={{ color: 'var(--app-blue)' }} />
-            </div>
+            <ProgressRing percent={learnPercent} />
             <div className="flex-1 min-w-0">
-              <p className="font-bold text-sm" style={{ color: 'var(--app-blue)' }}>Namaz mit Übersetzung</p>
-              <div className="flex items-center gap-2 mt-1">
-                <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--app-surface2)' }}>
-                  <div
-                    className="h-full transition-[width] duration-300"
-                    style={{ width: `${Math.min((learnStats.learned / learnStats.total) * 100, 100)}%`, background: 'var(--app-blue)' }}
-                  />
-                </div>
-                <span className="text-xs font-semibold shrink-0" style={{ color: 'var(--app-text2)' }}>
-                  {learnStats.learned}/{learnStats.total}
-                </span>
+              <div className="flex items-center gap-1.5 mb-0.5">
+                <GraduationCap size={14} style={{ color: 'var(--app-blue)' }} />
+                <p className="font-bold text-sm" style={{ color: 'var(--app-blue)' }}>Namaz mit Übersetzung</p>
               </div>
+              <p className="text-xs" style={{ color: 'var(--app-text2)' }}>
+                {learnStats.learned} von {learnStats.total} Wörtern auswendig gelernt
+              </p>
             </div>
-            <ArrowRight size={16} className="shrink-0" style={{ color: 'var(--app-blue)' }} />
+            <ChevronRight size={18} className="shrink-0" style={{ color: 'var(--app-blue)' }} />
           </div>
         </div>
       )}

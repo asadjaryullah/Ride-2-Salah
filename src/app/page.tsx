@@ -352,6 +352,10 @@ export default function HomePage() {
         <p className="stagger-1 mt-6 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--app-gold)' }}>
           Ride2Salah
         </p>
+        {/* 20-Jahre-Jubilaeum - bewusst klein/zweitrangig, die Marke oben bleibt im Fokus */}
+        <div className="stagger-2 relative w-10 h-10 mt-5 opacity-80">
+          <Image src="/jubilaeum.png" alt="20 Jahre Bashier Moschee" fill className="object-contain" />
+        </div>
       </div>
     );
   }
@@ -475,9 +479,9 @@ export default function HomePage() {
         </p>
         <div className="flex items-center gap-2.5">
           <div className="relative w-9 h-9 shrink-0"
-            title="100 Jahre Jubiläum"
+            title="20 Jahre Bashier Moschee"
             style={{ filter: 'drop-shadow(0 0 10px var(--app-gold-glow))' }}>
-            <Image src="/jubilaeum.png" alt="100 Jahre Jubiläum" fill className="object-contain" />
+            <Image src="/jubilaeum.png" alt="20 Jahre Bashier Moschee" fill className="object-contain" />
           </div>
           <button
             onClick={() => router.push('/profile')}

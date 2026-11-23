@@ -3,10 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTransitionRouter } from 'next-view-transitions';
-import { Home, Car, CalendarDays, UserRound, Navigation } from 'lucide-react';
+import { Home, Car, CalendarDays, UserRound, Navigation, BookOpen } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { todayBerlin } from '@/lib/date';
-import NamazIcon from '@/components/icons/NamazIcon';
 import { Capacitor } from '@capacitor/core';
 import { NativeBottomBar } from '@/lib/native-bottom-bar';
 
@@ -25,7 +24,7 @@ const HIDDEN_PATHS = [
    href-Werte kennen, ohne dass dafuer bei jedem Render neue Objekte
    entstehen muessen. */
 const LEFT_TABS = [
-  { id: 'namaz', label: 'Namaz', icon: NamazIcon, href: '/namaz' },
+  { id: 'namaz', label: 'Zikr', icon: BookOpen, href: '/namaz' },
   { id: 'termine', label: 'Termine', icon: CalendarDays, href: '/events' },
 ];
 const RIGHT_TABS = [

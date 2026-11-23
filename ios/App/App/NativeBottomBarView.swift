@@ -233,7 +233,7 @@ final class NativeBottomBarView: UIView {
         stack.distribution = .fillEqually
         addSubview(stack)
 
-        let namaz = TabButtonView(tabId: "namaz", label: "Namaz", iconSource: .asset(name: "NamazIcon"))
+        let namaz = TabButtonView(tabId: "namaz", label: "Zikr", iconSource: .symbol(active: "book.fill", inactive: "book"))
         let termine = TabButtonView(tabId: "termine", label: "Termine", iconSource: .symbol(active: "calendar", inactive: "calendar"))
         let spacer = UIView()
         let fahrt = TabButtonView(tabId: "fahrt", label: "Fahrt", iconSource: .symbol(active: "car.fill", inactive: "car"))
