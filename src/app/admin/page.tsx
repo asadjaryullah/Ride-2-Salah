@@ -707,7 +707,7 @@ export default function AdminPage() {
                     <div className="flex-1 min-w-0">
                       <p className="font-bold text-sm truncate" style={{ color: 'var(--app-text)' }}>{u.full_name || '–'}</p>
                       <p className="text-xs" style={{ color: 'var(--app-text3)' }}>
-                        {u.gender === 'male' ? 'Bruder' : 'Schwester'} · {u.member_id || 'Keine ID'}
+                        {u.gender === 'male' ? 'Bruder' : 'Schwester'}, {u.member_id || 'keine ID'}
                       </p>
                     </div>
                     <div className="flex gap-1.5 shrink-0">
@@ -764,8 +764,8 @@ export default function AdminPage() {
                       <p className="font-bold text-sm truncate" style={{ color: 'var(--app-text)' }}>{p.full_name || '–'}</p>
                       <p className="text-xs truncate" style={{ color: 'var(--app-text3)' }}>
                         {p.gender === 'male' ? 'Bruder' : 'Schwester'}
-                        {p.member_id ? ` · ${p.member_id}` : ''}
-                        {p.phone ? ` · ${p.phone}` : ''}
+                        {p.member_id ? `, ${p.member_id}` : ''}
+                        {p.phone ? `, ${p.phone}` : ''}
                       </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
@@ -790,8 +790,8 @@ export default function AdminPage() {
 
             {/* ── Termine aus Datei importieren ── */}
             <div className="rounded-2xl p-4 space-y-3" style={{ background: 'var(--app-surface2)', border: '1px solid var(--app-gold)' }}>
-              <p className="text-xs font-black uppercase tracking-widest flex items-center gap-1.5" style={{ color: 'var(--app-gold)' }}>
-                <Sparkles size={12} /> Termine aus Datei importieren
+              <p className="text-sm font-semibold flex items-center gap-1.5" style={{ color: 'var(--app-gold)' }}>
+                <Sparkles size={14} /> Termine aus Datei importieren
               </p>
               <p className="text-xs" style={{ color: 'var(--app-text2)' }}>
                 Lade einen Terminplan hoch (PDF, Foto oder Text) – die Termine werden automatisch erkannt.
@@ -816,7 +816,7 @@ export default function AdminPage() {
 
               {importedEvents.length > 0 && (
                 <div className="space-y-2 pt-1">
-                  <p className="text-[11px] font-bold uppercase tracking-wider" style={{ color: 'var(--app-text3)' }}>
+                  <p className="text-xs font-semibold" style={{ color: 'var(--app-text3)' }}>
                     Erkannte Termine – abwählen was nicht übernommen werden soll
                   </p>
                   {importedEvents.map((e, i) => (
@@ -839,11 +839,11 @@ export default function AdminPage() {
                         <span className="block text-sm font-bold truncate" style={{ color: 'var(--app-text)' }}>{e.title}</span>
                         <span className="block text-xs mt-0.5" style={{ color: 'var(--app-text2)' }}>
                           {new Date(e.date + 'T00:00').toLocaleDateString('de-DE', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}
-                          {e.time ? ` · ${e.time} Uhr` : ' · ganztägig'}
+                          {e.time ? `, ${e.time} Uhr` : ', ganztägig'}
                           {e.end_date && e.end_date !== e.date ? ` bis ${new Date(e.end_date + 'T00:00').toLocaleDateString('de-DE', { day: 'numeric', month: 'short' })}` : ''}
                         </span>
                         <span className="block text-[11px] mt-0.5" style={{ color: 'var(--app-text3)' }}>
-                          {e.location} · {ORG_LABEL[e.org] || e.org}
+                          {e.location}, {ORG_LABEL[e.org] || e.org}
                         </span>
                       </span>
                     </button>
@@ -867,7 +867,7 @@ export default function AdminPage() {
             </div>
 
             <div className="rounded-2xl p-4 space-y-3" style={{ background: 'var(--app-surface2)', border: '1px solid var(--app-border)' }}>
-              <p className="text-xs font-black uppercase tracking-widest" style={{ color: 'var(--app-text3)' }}>Neuer Termin</p>
+              <p className="text-sm font-semibold" style={{ color: 'var(--app-text3)' }}>Neuer Termin</p>
 
               {/* Template picker */}
               <button
@@ -945,11 +945,11 @@ export default function AdminPage() {
                   </p>
                   <div className="grid grid-cols-2 gap-2">
                     <label className="flex flex-col gap-1">
-                      <span className="text-[9px] uppercase tracking-wide" style={{ color: 'var(--app-text3)' }}>Datum</span>
+                      <span className="text-[10px] font-semibold" style={{ color: 'var(--app-text3)' }}>Datum</span>
                       <Input type="date" value={newEventDate} onChange={e => setNewEventDate(e.target.value)} />
                     </label>
                     <label className="flex flex-col gap-1">
-                      <span className="text-[9px] uppercase tracking-wide" style={{ color: 'var(--app-text3)' }}>Uhrzeit</span>
+                      <span className="text-[10px] font-semibold" style={{ color: 'var(--app-text3)' }}>Uhrzeit</span>
                       <Input type="time" value={newEventTime} onChange={e => setNewEventTime(e.target.value)} />
                     </label>
                   </div>
@@ -964,11 +964,11 @@ export default function AdminPage() {
                   </p>
                   <div className="grid grid-cols-2 gap-2">
                     <label className="flex flex-col gap-1">
-                      <span className="text-[9px] uppercase tracking-wide" style={{ color: 'var(--app-text3)' }}>Datum</span>
+                      <span className="text-[10px] font-semibold" style={{ color: 'var(--app-text3)' }}>Datum</span>
                       <Input type="date" value={newEventEndDate} onChange={e => setNewEventEndDate(e.target.value)} />
                     </label>
                     <label className="flex flex-col gap-1">
-                      <span className="text-[9px] uppercase tracking-wide" style={{ color: 'var(--app-text3)' }}>Uhrzeit</span>
+                      <span className="text-[10px] font-semibold" style={{ color: 'var(--app-text3)' }}>Uhrzeit</span>
                       <Input type="time" value={newEventEndTime} onChange={e => setNewEventEndTime(e.target.value)} />
                     </label>
                   </div>
@@ -1023,7 +1023,7 @@ export default function AdminPage() {
 
               return (
                 <div className="space-y-2">
-                  <p className="text-xs font-black uppercase tracking-widest" style={{ color: 'var(--app-text3)' }}>Kommend ({upcomingEvents.length})</p>
+                  <p className="text-sm font-semibold" style={{ color: 'var(--app-text3)' }}>Kommend ({upcomingEvents.length})</p>
                   {upcomingEvents.length === 0 ? (
                     <p className="text-sm italic text-center p-4 rounded-xl" style={{ color: 'var(--app-text3)', background: 'var(--app-surface2)', border: '1px solid var(--app-border)' }}>
                       Keine kommenden Termine.
@@ -1053,7 +1053,7 @@ export default function AdminPage() {
 
             {/* Quick Links */}
             <div className="rounded-2xl p-4 space-y-3" style={{ background: 'var(--app-surface2)', border: '1px solid var(--app-border)' }}>
-              <p className="text-xs font-black uppercase tracking-widest" style={{ color: 'var(--app-text3)' }}>Quick Links (Startseite)</p>
+              <p className="text-sm font-semibold" style={{ color: 'var(--app-text3)' }}>Quick Links (Startseite)</p>
               <div className="flex gap-2">
                 <Input placeholder="Emoji" value={newLinkEmoji} onChange={e => setNewLinkEmoji(e.target.value)} className="w-16 text-center text-lg" />
                 <Input placeholder="Titel" value={newLinkTitle} onChange={e => setNewLinkTitle(e.target.value)} className="flex-1" />
@@ -1087,7 +1087,7 @@ export default function AdminPage() {
 
             {/* Tägliche Zitate */}
             <div className="rounded-2xl p-4 space-y-3" style={{ background: 'var(--app-surface2)', border: '1px solid var(--app-border)' }}>
-              <p className="text-xs font-black uppercase tracking-widest" style={{ color: 'var(--app-text3)' }}>Tägliche Zitate (Zikr-Seite)</p>
+              <p className="text-sm font-semibold" style={{ color: 'var(--app-text3)' }}>Tägliche Zitate (Zikr-Seite)</p>
               <textarea
                 placeholder="Arabischer Text (optional)"
                 value={newQuoteArabic}
@@ -1143,7 +1143,7 @@ export default function AdminPage() {
 
             {/* Gebetszeiten */}
             <div className="rounded-2xl p-4 space-y-3" style={{ background: 'var(--app-surface2)', border: '1px solid var(--app-border)' }}>
-              <p className="text-xs font-black uppercase tracking-widest" style={{ color: 'var(--app-text3)' }}>Gebetszeiten</p>
+              <p className="text-sm font-semibold" style={{ color: 'var(--app-text3)' }}>Gebetszeiten</p>
               <div className="space-y-2">
                 {prayers.map((prayer) => (
                   <div key={prayer.id} className="flex items-center justify-between gap-3 p-2.5 rounded-xl"
@@ -1192,8 +1192,8 @@ export default function AdminPage() {
 
             {/* Push — nur Hauptadmin */}
             {!canEditEvents && !canEditTimes && <div className="rounded-2xl p-4 space-y-3" style={{ background: 'var(--app-surface2)', border: '1px solid var(--app-border)' }}>
-              <p className="text-xs font-black uppercase tracking-widest flex items-center gap-1.5" style={{ color: 'var(--app-text3)' }}>
-                <BellRing size={12} /> Push Nachricht
+              <p className="text-sm font-semibold flex items-center gap-1.5" style={{ color: 'var(--app-text3)' }}>
+                <BellRing size={14} /> Push Nachricht
               </p>
               <Input placeholder="Titel" value={pushTitle} onChange={e => setPushTitle(e.target.value)} />
               <Input placeholder="Text" value={pushMessage} onChange={e => setPushMessage(e.target.value)} />
@@ -1206,8 +1206,8 @@ export default function AdminPage() {
             {/* Cron — nur Hauptadmin */}
             {!canEditEvents && !canEditTimes &&
             <div className="rounded-2xl p-4 space-y-3" style={{ background: 'var(--app-surface2)', border: '1px solid var(--app-border)' }}>
-              <p className="text-xs font-black uppercase tracking-widest flex items-center gap-1.5" style={{ color: 'var(--app-text3)' }}>
-                <BellRing size={12} /> Cron / Push Diagnose
+              <p className="text-sm font-semibold flex items-center gap-1.5" style={{ color: 'var(--app-text3)' }}>
+                <BellRing size={14} /> Cron / Push Diagnose
               </p>
               <div className="grid grid-cols-2 gap-2">
                 <Button variant="outline" size="sm" onClick={() => handleCronTest('debug')} disabled={cronTesting} className="text-xs">
@@ -1236,8 +1236,8 @@ export default function AdminPage() {
 
             {/* Export — nur Hauptadmin */}
             {!canEditEvents && !canEditTimes && <div className="rounded-2xl p-4 space-y-3" style={{ background: 'var(--app-surface2)', border: '1px solid var(--app-border)' }}>
-              <p className="text-xs font-black uppercase tracking-widest flex items-center gap-1.5" style={{ color: 'var(--app-text3)' }}>
-                <Download size={12} /> Export (CSV)
+              <p className="text-sm font-semibold flex items-center gap-1.5" style={{ color: 'var(--app-text3)' }}>
+                <Download size={14} /> Export (CSV)
               </p>
               <div className="grid grid-cols-2 gap-2">
                 {[['rides','Fahrten'],['bookings','Buchungen'],['profiles','Profile'],['mosque_visits','Besuche']].map(([t, l]) => (
@@ -1459,11 +1459,11 @@ export default function AdminPage() {
                   </p>
                   <div className="grid grid-cols-2 gap-2">
                     <label className="flex flex-col gap-1">
-                      <span className="text-[9px] uppercase tracking-wide" style={{ color: 'var(--app-text3)' }}>Datum</span>
+                      <span className="text-[10px] font-semibold" style={{ color: 'var(--app-text3)' }}>Datum</span>
                       <Input type="date" value={editEventForm.startDate} onChange={e => setEditEventForm(f => ({ ...f, startDate: e.target.value }))} />
                     </label>
                     <label className="flex flex-col gap-1">
-                      <span className="text-[9px] uppercase tracking-wide" style={{ color: 'var(--app-text3)' }}>Uhrzeit</span>
+                      <span className="text-[10px] font-semibold" style={{ color: 'var(--app-text3)' }}>Uhrzeit</span>
                       <Input type="time" value={editEventForm.startTime} onChange={e => setEditEventForm(f => ({ ...f, startTime: e.target.value }))} />
                     </label>
                   </div>
@@ -1478,11 +1478,11 @@ export default function AdminPage() {
                   </p>
                   <div className="grid grid-cols-2 gap-2">
                     <label className="flex flex-col gap-1">
-                      <span className="text-[9px] uppercase tracking-wide" style={{ color: 'var(--app-text3)' }}>Datum</span>
+                      <span className="text-[10px] font-semibold" style={{ color: 'var(--app-text3)' }}>Datum</span>
                       <Input type="date" value={editEventForm.endDate} onChange={e => setEditEventForm(f => ({ ...f, endDate: e.target.value }))} />
                     </label>
                     <label className="flex flex-col gap-1">
-                      <span className="text-[9px] uppercase tracking-wide" style={{ color: 'var(--app-text3)' }}>Uhrzeit</span>
+                      <span className="text-[10px] font-semibold" style={{ color: 'var(--app-text3)' }}>Uhrzeit</span>
                       <Input type="time" value={editEventForm.endTime} onChange={e => setEditEventForm(f => ({ ...f, endTime: e.target.value }))} />
                     </label>
                   </div>

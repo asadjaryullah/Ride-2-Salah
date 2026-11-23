@@ -3,10 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useTransitionRouter } from 'next-view-transitions';
 import { supabase } from '@/lib/supabase';
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-import { Phone, Loader2, Save } from "lucide-react";
+import { Phone, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function CompleteProfilePage() {
@@ -54,38 +53,38 @@ export default function CompleteProfilePage() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6">
-      <Card className="w-full max-w-sm shadow-xl border-t-4 border-t-yellow-500">
+    <main className="min-h-screen flex flex-col items-center justify-center p-6" style={{ background: 'var(--app-bg)' }}>
+      <Card className="w-full max-w-sm" style={{ background: 'var(--app-surface2)', border: '1px solid var(--app-border)', borderTop: '3px solid var(--app-gold)' }}>
         <CardHeader className="text-center">
-          <div className="mx-auto bg-yellow-100 p-3 rounded-full w-fit mb-2">
-            <Phone className="h-6 w-6 text-yellow-700" />
+          <div className="mx-auto p-3 rounded-full w-fit mb-2" style={{ background: 'var(--app-gold-dim)' }}>
+            <Phone className="h-6 w-6" style={{ color: 'var(--app-gold)' }} />
           </div>
-          <CardTitle>Handynummer fehlt</CardTitle>
-          <CardDescription>
+          <CardTitle style={{ color: 'var(--app-text)' }}>Handynummer fehlt</CardTitle>
+          <CardDescription style={{ color: 'var(--app-text2)' }}>
             Damit dich Fahrer oder Mitfahrer erreichen können, benötigen wir noch deine Nummer.
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent>
           <form onSubmit={handleSave} className="space-y-4">
             <div className="space-y-1">
-                <label className="text-xs font-bold uppercase text-slate-500 ml-1">Handy <span className="text-red-500">*</span></label>
+                <label className="text-sm font-semibold" style={{ color: 'var(--app-text2)' }}>Handynummer</label>
                 <div className="relative">
-                    <Phone className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
-                    <Input 
-                      className="pl-9 h-12 text-lg" 
-                      placeholder="0176 12345678" 
+                    <Phone className="absolute left-3 top-2.5 h-4 w-4" style={{ color: 'var(--app-text3)' }} />
+                    <Input
+                      className="pl-9 h-12 text-lg"
+                      placeholder="0176 12345678"
                       type="tel"
-                      value={phone} 
-                      onChange={e => setPhone(e.target.value)} 
-                      required 
+                      value={phone}
+                      onChange={e => setPhone(e.target.value)}
+                      required
                     />
                 </div>
             </div>
 
-            <Button type="submit" className="w-full bg-slate-900 text-white h-12 text-lg" disabled={loading}>
-              {loading ? <Loader2 className="animate-spin mr-2"/> : "Speichern & Weiter"}
-            </Button>
+            <button type="submit" className="btn-gold w-full h-12 text-lg" disabled={loading} style={{ opacity: loading ? 0.7 : 1 }}>
+              {loading ? <Loader2 className="animate-spin mr-2 inline" /> : "Speichern & Weiter"}
+            </button>
           </form>
         </CardContent>
       </Card>

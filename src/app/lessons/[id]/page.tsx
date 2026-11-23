@@ -47,7 +47,7 @@ export default function LessonPage() {
           <ArrowLeft size={18} />
         </button>
         <h1 className="text-base font-bold truncate" style={{ color: 'var(--app-text)' }}>
-          {lesson ? `${LESSON_KIND_LABEL[lesson.kind]} · ${formatLessonDate(lesson.delivered_on)}` : 'Khutba & Dars'}
+          {lesson ? `${LESSON_KIND_LABEL[lesson.kind]} vom ${formatLessonDate(lesson.delivered_on)}` : 'Khutba & Dars'}
         </h1>
       </div>
 
@@ -69,7 +69,7 @@ export default function LessonPage() {
             <div className="app-card p-4 space-y-3 stagger-1">
               <div>
                 {lesson.topic && (
-                  <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: 'var(--app-gold)' }}>{lesson.topic}</p>
+                  <p className="text-xs font-bold mb-1" style={{ color: 'var(--app-gold)' }}>{lesson.topic}</p>
                 )}
                 <h2 className="text-xl font-extrabold leading-snug" style={{ color: 'var(--app-text)' }}>{lesson.title}</h2>
               </div>

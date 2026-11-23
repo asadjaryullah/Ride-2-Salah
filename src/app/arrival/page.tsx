@@ -80,8 +80,8 @@ export default function ArrivalPage() {
 
       {/* CHECKLISTE */}
       <div className={`w-full max-w-md space-y-4 rounded-2xl ${celebrate ? 'animate-section-celebrate' : ''}`}>
-        <h3 className="text-sm font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--app-text2)' }}>
-          Deine Sunnah Checkliste
+        <h3 className="text-base font-semibold mb-2" style={{ color: 'var(--app-text)' }}>
+          Deine Sunnah-Checkliste
         </h3>
 
         <div className="w-full h-2 rounded-full mb-4 overflow-hidden" style={{ background: 'var(--app-border)' }}>

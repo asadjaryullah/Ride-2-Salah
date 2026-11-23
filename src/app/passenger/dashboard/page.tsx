@@ -153,7 +153,7 @@ function PassengerDashboardContent() {
           style={{ background: 'var(--app-emerald)', color: '#fff' }}
           onClick={() => router.push('/arrival')}
         >
-          Zur Gebetsvorbereitung ➜
+          Zur Gebetsvorbereitung
         </Button>
       </div>
     );
@@ -224,7 +224,7 @@ function PassengerDashboardContent() {
         <div className="space-y-4">
           <div className="flex justify-between items-center p-4 rounded-xl" style={{ background: 'var(--app-card)', border: '1px solid var(--app-border)' }}>
             <div>
-              <p className="text-xs uppercase font-bold" style={{ color: 'var(--app-text2)' }}>Dein Fahrer</p>
+              <p className="text-xs font-semibold" style={{ color: 'var(--app-text2)' }}>Dein Fahrer</p>
               <p className="text-xl font-bold" style={{ color: 'var(--app-text)' }}>{ride.driver_name}</p>
             </div>
             <div className="flex gap-2">
@@ -246,11 +246,11 @@ function PassengerDashboardContent() {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="p-3 rounded-lg text-center" style={{ background: 'var(--app-card)', border: '1px solid var(--app-border)' }}>
-              <p className="text-xs uppercase" style={{ color: 'var(--app-text2)' }}>Gebet</p>
+              <p className="text-xs font-semibold" style={{ color: 'var(--app-text2)' }}>Gebet</p>
               <p className="font-mono font-bold text-lg" style={{ color: 'var(--app-text)' }}>{ride.prayer_time} Uhr</p>
             </div>
             <div className="p-3 rounded-lg text-center" style={{ background: 'var(--app-card)', border: '1px solid var(--app-border)' }}>
-              <p className="text-xs uppercase" style={{ color: 'var(--app-text2)' }}>Status</p>
+              <p className="text-xs font-semibold" style={{ color: 'var(--app-text2)' }}>Status</p>
               <p className="font-bold uppercase text-sm mt-1" style={{ color: 'var(--app-blue)' }}>
                 {ride.status === 'active' ? 'Unterwegs' : 'Beendet'}
               </p>

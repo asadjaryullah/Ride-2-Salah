@@ -81,7 +81,7 @@ function CarSeatSelector({ availableSeats, onChange, gender }: { availableSeats:
       {/* Counter */}
       <div className="flex items-baseline gap-1.5 mb-4">
         <span className="text-3xl font-black" style={{ color: 'var(--app-emerald)' }}>{availableSeats}</span>
-        <span className="text-sm font-bold uppercase tracking-wide" style={{ color: 'var(--app-text2)' }}>
+        <span className="text-sm font-semibold" style={{ color: 'var(--app-text2)' }}>
           {availableSeats === 1 ? 'freier Platz' : 'freie Plätze'}
         </span>
       </div>
@@ -289,7 +289,7 @@ function SelectPrayerContent() {
         () => { setCreatingRide(false); toast.error("GPS-Zugriff wird benötigt."); }
       );
     } else {
-      router.push(`/passenger/list?prayer=${selectedPrayer.id}&time=${selectedPrayer.time}`);
+      router.push(`/passenger/list?prayer=${selectedPrayer.id}&time=${selectedPrayer.time}&name=${encodeURIComponent(selectedPrayer.name)}`);
     }
   };
 
@@ -300,7 +300,7 @@ function SelectPrayerContent() {
         <div className="text-center">
           <h1 className="text-xl font-bold" style={{ color: 'var(--app-text)' }}>Wann ist das Gebet?</h1>
           {isAdmin && <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded font-bold">ADMIN VIEW</span>}
-          {!isAdmin && <p className="text-xs uppercase font-bold mt-1" style={{ color: 'var(--app-text2)' }}>{role === 'driver' ? 'Fahrt anbieten' : 'Fahrt suchen'}</p>}
+          {!isAdmin && <p className="text-sm font-semibold mt-1" style={{ color: 'var(--app-text2)' }}>{role === 'driver' ? 'Fahrt anbieten' : 'Fahrt suchen'}</p>}
         </div>
         <div className="w-9"></div>
       </div>
@@ -358,8 +358,8 @@ function SelectPrayerContent() {
 
           {/* Ziel der Fahrt */}
           <div className="mt-5">
-            <p className="text-[10px] font-bold uppercase tracking-[0.15em] mb-2" style={{ color: 'var(--app-text3)' }}>
-              Ziel · Bashier Moschee
+            <p className="text-sm font-semibold mb-2" style={{ color: 'var(--app-text3)' }}>
+              Ziel: Bashier Moschee
             </p>
             <div className="h-[180px] rounded-2xl overflow-hidden"
               style={{ border: '1px solid var(--app-border)' }}>

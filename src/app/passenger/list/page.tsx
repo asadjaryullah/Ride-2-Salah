@@ -20,6 +20,9 @@ function PassengerListContent() {
   const searchParams = useSearchParams();
   const prayerId = searchParams.get('prayer');
   const prayerTime = searchParams.get('time');
+  // Fehlt bei sehr alten Links/Lesezeichen ohne den Parameter - dann lieber
+  // nichts als die rohe, fuer Nutzer bedeutungslose Gebets-ID anzeigen.
+  const prayerName = searchParams.get('name');
 
   const [rides, setRides] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -194,7 +197,7 @@ function PassengerListContent() {
         <div className="ml-2">
           <h1 className="text-xl font-bold" style={{ color: 'var(--app-text)' }}>Verfügbare Fahrer</h1>
           <p className="text-xs" style={{ color: 'var(--app-text2)' }}>
-            Für {prayerId} um {prayerTime} Uhr
+            {prayerName ? `Für ${prayerName} um ${prayerTime} Uhr` : `Um ${prayerTime} Uhr`}
           </p>
         </div>
       </div>
@@ -211,7 +214,7 @@ function PassengerListContent() {
               Du fährst hier schon mit
             </p>
             <p className="text-xs mt-0.5" style={{ color: 'var(--app-text2)' }}>
-              Zu deiner Fahrt →
+              Zu deiner Fahrt
             </p>
           </div>
           <ArrowRight size={18} style={{ color: 'var(--app-emerald)', flexShrink: 0 }} />
@@ -311,7 +314,7 @@ function PassengerListContent() {
                 <User className="h-6 w-6" style={{ color: 'var(--app-text2)' }} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs uppercase font-bold" style={{ color: 'var(--app-text3)' }}>Dein Fahrer</p>
+                <p className="text-xs font-semibold" style={{ color: 'var(--app-text3)' }}>Dein Fahrer</p>
                 <p className="font-bold text-lg truncate" style={{ color: 'var(--app-text)' }}>{bookingSuccess.driverName}</p>
                 {bookingSuccess.driverPhone && (
                   <p className="text-sm" style={{ color: 'var(--app-text2)' }}>{bookingSuccess.driverPhone}</p>
@@ -341,7 +344,7 @@ function PassengerListContent() {
                 style={{ background: 'var(--app-text)', color: 'var(--app-bg)' }}
                 onClick={() => router.push(`/passenger/dashboard?rideId=${bookingSuccess.rideId}`)}
               >
-                Weiter ➜
+                Weiter
               </Button>
             </div>
           </div>

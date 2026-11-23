@@ -45,7 +45,7 @@ export default function ZikrWidget({ userId }: { userId: string }) {
       }}
     >
       <div className="flex items-center justify-between mb-3">
-        <p className="text-[11px] font-bold uppercase tracking-[0.1em]"
+        <p className="text-sm font-semibold"
           style={{ color: 'var(--app-text2)' }}>
           Täglicher Zikr
         </p>

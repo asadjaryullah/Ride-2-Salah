@@ -245,7 +245,7 @@ export default function EventsPage() {
           </div>
 
           <div className="space-y-3 pt-2">
-            <h3 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--app-text2)' }}>Termine im {monthName}</h3>
+            <h3 className="text-base font-bold" style={{ color: 'var(--app-text2)' }}>Termine im {monthName}</h3>
 
             {monthEvents.length === 0 ? (
               <p className="text-sm italic" style={{ color: 'var(--app-text3)' }}>Keine Termine in diesem Monat.</p>
@@ -291,7 +291,7 @@ export default function EventsPage() {
           </div>
 
           <div className="mt-4 space-y-2">
-            <p className="text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--app-text3)' }}>Kalender abonnieren</p>
+            <p className="text-sm font-semibold" style={{ color: 'var(--app-text3)' }}>Kalender abonnieren</p>
             <div className="grid grid-cols-2 gap-2">
               <Button
                 variant="outline"
@@ -333,7 +333,7 @@ export default function EventsPage() {
               </div>
               <div className="px-6 pb-4">
                 <h3 className="text-base font-extrabold mb-1" style={{ color: 'var(--app-text)' }}>{dateLabel}</h3>
-                <p className="text-xs mb-4 font-bold uppercase tracking-wide" style={{ color: 'var(--app-text3)' }}>
+                <p className="text-sm mb-4 font-medium" style={{ color: 'var(--app-text3)' }}>
                   {dayEvents.length} {dayEvents.length === 1 ? 'Termin' : 'Termine'}
                 </p>
                 <div className="space-y-3">

@@ -117,7 +117,7 @@ export default function FahrtPage() {
             <Card className="p-4 rounded-2xl" style={{ background: 'var(--app-gold-dim)', border: '1px solid var(--app-gold)' }}>
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: 'var(--app-gold)' }}>
+                  <p className="text-xs font-semibold" style={{ color: 'var(--app-gold)' }}>
                     {isNext ? 'Nächstes Gebet' : 'Ausgewählt'}
                   </p>
                   <p className="text-2xl font-extrabold" style={{ color: 'var(--app-text)' }}>{selected.name}</p>
@@ -181,7 +181,7 @@ export default function FahrtPage() {
 
           {/* VERFUEGBARE FAHRTEN */}
           <div className="space-y-2">
-            <h2 className="text-sm font-bold uppercase tracking-widest" style={{ color: 'var(--app-text2)' }}>
+            <h2 className="text-base font-bold" style={{ color: 'var(--app-text2)' }}>
               Fahrten zum {selected?.name ?? '...'}
             </h2>
 
@@ -193,7 +193,7 @@ export default function FahrtPage() {
               drivers.map((d, i) => (
                 <Card
                   key={i}
-                  onClick={() => selected && router.push(`/passenger/list?prayer=${selected.id}&time=${selected.time}`)}
+                  onClick={() => selected && router.push(`/passenger/list?prayer=${selected.id}&time=${selected.time}&name=${encodeURIComponent(selected.name)}`)}
                   className="flex items-center gap-3 p-3 rounded-xl cursor-pointer active:scale-[0.98] transition-transform"
                   style={{ background: 'var(--app-card)', border: '1px solid var(--app-border)' }}
                 >

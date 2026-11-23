@@ -120,11 +120,6 @@ export default function LoginPage() {
     <main className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden"
       style={{ background: 'var(--app-bg)' }}>
 
-      {/* Glow top */}
-      <div style={{ position: 'absolute', top: -80, left: '50%', transform: 'translateX(-50%)', width: 280, height: 280, borderRadius: '50%', background: 'radial-gradient(circle, var(--app-gold-glow) 0%, transparent 70%)', pointerEvents: 'none' }} />
-      {/* Glow bottom */}
-      <div style={{ position: 'absolute', bottom: 40, right: -40, width: 200, height: 200, borderRadius: '50%', background: 'radial-gradient(circle, var(--app-emerald-dim) 0%, transparent 70%)', pointerEvents: 'none' }} />
-
       {/* Back */}
       <div className="absolute top-6 left-6 z-20">
         <button onClick={() => step === 'verify' ? setStep('input') : router.push('/')}

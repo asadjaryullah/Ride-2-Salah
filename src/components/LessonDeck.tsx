@@ -152,7 +152,7 @@ export default function LessonDeck({ cards }: { cards: LessonCard[] }) {
         onPointerUp={handleSwipe}
       >
         <div className="px-5 pt-5 pb-3 flex items-center justify-between">
-          <span className="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full"
+          <span className="text-xs font-bold px-2 py-1 rounded-full"
             style={{ background: 'var(--app-surface2)', color: accent, border: `1px solid ${accent}` }}>
             {CARD_KIND_LABEL[card.kind]}
           </span>
@@ -190,7 +190,7 @@ export default function LessonDeck({ cards }: { cards: LessonCard[] }) {
                 )}
               </div>
               <div className="py-3 text-center text-xs font-bold" style={{ color: accent, borderTop: '1px solid var(--app-border)' }}>
-                Tippen zum Umdrehen · Wischen zum Blättern
+                Tippen zum Umdrehen, wischen zum Blättern
               </div>
             </div>
 
@@ -198,12 +198,12 @@ export default function LessonDeck({ cards }: { cards: LessonCard[] }) {
             <div style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden', transform: 'rotateY(180deg)', gridArea: '1/1' }}>
               <div className="px-5 py-5 space-y-3">
                 <div className="p-3 rounded-2xl" style={{ background: 'var(--app-surface2)' }}>
-                  <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: 'var(--app-text3)' }}>Deutsch</p>
+                  <p className="text-xs font-semibold mb-1" style={{ color: 'var(--app-text3)' }}>Deutsch</p>
                   <p className="text-[15px] leading-relaxed font-semibold" style={{ color: 'var(--app-text)' }}>{card.back_de}</p>
                 </div>
                 {card.back_ur && (
                   <div className="p-3 rounded-2xl" style={{ background: 'var(--app-surface2)' }}>
-                    <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: 'var(--app-text3)' }}>اردو</p>
+                    <p className="text-xs font-semibold mb-1" style={{ color: 'var(--app-text3)' }}>اردو</p>
                     <p className="text-xl leading-loose text-right font-urdu" style={{ direction: 'rtl', color: 'var(--app-text)' }}>
                       {card.back_ur}
                     </p>

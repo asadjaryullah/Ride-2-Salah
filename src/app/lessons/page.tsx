@@ -98,14 +98,14 @@ export default function LessonsPage() {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-0.5">
-                  <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: 'var(--app-gold)' }}>
+                  <span className="text-[11px] font-bold" style={{ color: 'var(--app-gold)' }}>
                     {LESSON_KIND_LABEL[r.kind]}
                   </span>
                   <span className="text-[11px]" style={{ color: 'var(--app-text3)' }}>{formatLessonDate(r.delivered_on)}</span>
                 </div>
                 <p className="font-extrabold text-[15px] leading-snug truncate" style={{ color: 'var(--app-text)' }}>{r.title}</p>
                 <p className="text-xs mt-1" style={{ color: 'var(--app-text2)' }}>
-                  {r.topic ? `${r.topic} · ` : ''}{ids.length} Karten · {learned} gelernt
+                  {r.topic ? `${r.topic}, ` : ''}{ids.length} Karten, {learned} gelernt
                 </p>
               </div>
             </button>

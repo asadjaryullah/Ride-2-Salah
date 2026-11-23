@@ -438,7 +438,7 @@ export default function DriverDashboard() {
 
         {/* key sorgt dafuer, dass React die Zahl neu einhaengt und die
             Animation erneut laeuft - sonst spielt sie nur beim ersten Mal. */}
-        <h3 className="text-sm font-bold uppercase mb-3" style={{ color: 'var(--app-text2)' }}>
+        <h3 className="text-sm font-semibold mb-3" style={{ color: 'var(--app-text2)' }}>
           Abholungen (
           <span
             key={passengers.length}

@@ -261,7 +261,7 @@ export default function ZikrPage() {
                 „{dailyQuote.translation}"
               </p>
               {dailyQuote.source && (
-                <p className="text-[10px] text-center mt-2 font-bold uppercase tracking-widest" style={{ color: 'var(--app-text3)' }}>
+                <p className="text-xs text-center mt-2 italic" style={{ color: 'var(--app-text3)' }}>
                   — {dailyQuote.source}
                 </p>
               )}
@@ -300,7 +300,7 @@ export default function ZikrPage() {
                       <span className="text-[9px] font-bold uppercase" style={{ color: isDone ? 'rgba(255,255,255,0.7)' : 'var(--app-text3)' }}>{isDone ? 'FERTIG' : `von ${item.target}`}</span>
                     </div>
                     <div className="flex-1 flex flex-col items-end text-right">
-                      <p className="text-xs font-bold uppercase mb-2 tracking-widest" style={{ color: isDone ? 'rgba(255,255,255,0.7)' : 'var(--app-text3)' }}>{item.title}</p>
+                      <p className="text-sm font-bold mb-2" style={{ color: isDone ? 'rgba(255,255,255,0.7)' : 'var(--app-text3)' }}>{item.title}</p>
                       <p className="text-xl font-bold leading-loose" style={{ fontFamily: 'var(--font-amiri)', direction: 'rtl', lineHeight: '1.8', color: isDone ? '#fff' : 'var(--app-text)' }}>
                         {item.arabic}
                       </p>

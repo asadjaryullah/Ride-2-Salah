@@ -364,7 +364,7 @@ export default function LearnPage() {
                     border: `1px solid ${section === sec ? 'var(--app-text)' : 'var(--app-border)'}`,
                   }}
                 >
-                  <p className="text-xs font-black uppercase tracking-wide" style={{ color: section === sec ? 'var(--app-bg)' : 'var(--app-text3)' }}>
+                  <p className="text-sm font-bold" style={{ color: section === sec ? 'var(--app-bg)' : 'var(--app-text3)' }}>
                     {label}
                   </p>
                   <p className="text-[10px] mt-0.5 font-semibold" style={{ color: section === sec ? 'color-mix(in srgb, var(--app-bg) 60%, transparent)' : 'var(--app-text3)' }}>
@@ -426,9 +426,9 @@ export default function LearnPage() {
             onPointerUp={handleCardSwipe}
           >
             <div className="px-5 pt-5 pb-3 flex items-center justify-between">
-              <span className="text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full"
+              <span className="text-xs font-bold px-2 py-1 rounded-full"
                 style={{ background: 'var(--app-gold-dim)', color: 'var(--app-gold)' }}>
-                {currentCard.sectionLabel} · Wort {currentCard.wordNum}
+                {currentCard.sectionLabel}, Wort {currentCard.wordNum}
               </span>
               <span className="text-xs font-bold" style={{ color: 'var(--app-text3)' }}>
                 {cardIndex + 1}/{sectionWords.length}
@@ -456,7 +456,7 @@ export default function LearnPage() {
                     )}
                   </div>
                   <div className="py-4 text-center text-xs font-bold" style={{ color: 'var(--app-gold)', borderTop: '1px solid var(--app-border)' }}>
-                    Tippen · Wischen zum Blättern
+                    Tippen oder wischen zum Blättern
                   </div>
                 </div>
 
@@ -467,12 +467,12 @@ export default function LearnPage() {
                       {currentCard.arabic}
                     </p>
                     <div className="p-3 rounded-2xl" style={{ background: 'var(--app-surface2)' }}>
-                      <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: 'var(--app-text3)' }}>Deutsch</p>
+                      <p className="text-xs font-semibold mb-1" style={{ color: 'var(--app-text3)' }}>Deutsch</p>
                       <p className="text-lg font-bold" style={{ color: 'var(--app-text)' }}>{currentCard.german}</p>
                     </div>
                     {currentCard.urdu && (
                       <div className="p-3 rounded-2xl" style={{ background: 'var(--app-surface2)' }}>
-                        <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: 'var(--app-text3)' }}>اردو</p>
+                        <p className="text-xs font-semibold mb-1" style={{ color: 'var(--app-text3)' }}>اردو</p>
                         <p className="text-xl leading-loose text-right font-urdu" style={{ direction: 'rtl', color: 'var(--app-text)' }}>
                           {currentCard.urdu}
                         </p>
@@ -571,7 +571,7 @@ export default function LearnPage() {
 
               {/* Question: Arabic word → pick German meaning */}
               <div className="rounded-3xl p-6 text-center" style={{ background: 'var(--app-card)', border: '1px solid var(--app-border)', minHeight: 140 }}>
-                <p className="text-[10px] font-black uppercase tracking-widest mb-3" style={{ color: 'var(--app-text3)' }}>
+                <p className="text-sm font-semibold mb-3" style={{ color: 'var(--app-text3)' }}>
                   Was bedeutet dieses Wort?
                 </p>
                 <p className="leading-loose" style={{ fontFamily: 'var(--font-amiri)', fontSize: '2.8rem', direction: 'rtl', color: 'var(--app-text)' }}>
@@ -648,7 +648,7 @@ export default function LearnPage() {
           {/* Word list grouped by section */}
           {[...new Map(words.map(w => [w.section, w.sectionLabel])).entries()].map(([sec, label]) => (
             <div key={sec}>
-              <p className="text-[10px] font-black uppercase tracking-widest mb-2 px-1" style={{ color: 'var(--app-text3)' }}>{label}</p>
+              <p className="text-xs font-bold mb-2 px-1" style={{ color: 'var(--app-text3)' }}>{label}</p>
               <div className="space-y-2">
                 {words.filter(w => w.section === sec).map(w => (
                   <div key={w.id} className="flex items-center gap-3 p-3 rounded-xl"
@@ -712,7 +712,7 @@ export default function LearnPage() {
 
               {/* Arabic input */}
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: 'var(--app-text3)' }}>Arabisch *</p>
+                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--app-text3)' }}>Arabisch *</p>
                 <input
                   value={form.arabic}
                   onChange={e => setForm(f => ({ ...f, arabic: e.target.value }))}
@@ -727,7 +727,7 @@ export default function LearnPage() {
 
               {/* Transliteration */}
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: 'var(--app-text3)' }}>Transliteration</p>
+                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--app-text3)' }}>Transliteration</p>
                 <input
                   value={form.transliteration}
                   onChange={e => setForm(f => ({ ...f, transliteration: e.target.value }))}
@@ -739,7 +739,7 @@ export default function LearnPage() {
 
               {/* German */}
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: 'var(--app-text3)' }}>Deutsch *</p>
+                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--app-text3)' }}>Deutsch *</p>
                 <input
                   value={form.german}
                   onChange={e => setForm(f => ({ ...f, german: e.target.value }))}
@@ -751,7 +751,7 @@ export default function LearnPage() {
 
               {/* Urdu */}
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest mb-1" style={{ color: 'var(--app-text3)' }}>اردو</p>
+                <p className="text-xs font-semibold mb-1" style={{ color: 'var(--app-text3)' }}>اردو</p>
                 <input
                   value={form.urdu}
                   onChange={e => setForm(f => ({ ...f, urdu: e.target.value }))}
