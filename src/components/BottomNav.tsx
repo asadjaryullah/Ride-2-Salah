@@ -3,9 +3,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTransitionRouter } from 'next-view-transitions';
-import { Home, Car, CalendarDays, UserRound, Navigation, BookOpen } from 'lucide-react';
+import { Home, Car, CalendarDays, UserRound, Navigation } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { todayBerlin } from '@/lib/date';
+import NamazIcon from '@/components/icons/NamazIcon';
 
 const HIDDEN_PATHS = [
   '/login',
@@ -59,14 +60,11 @@ export default function BottomNav() {
     else setActiveRideRoute(null);
   };
 
-  // Read query params without useSearchParams to avoid Suspense requirement
   useEffect(() => {
     if (pathname === '/') {
       setActiveTab('home');
-    } else if (pathname.startsWith('/history')) {
-      const params = new URLSearchParams(window.location.search);
-      const tab = params.get('tab');
-      setActiveTab(tab === 'events' ? 'termine' : 'zikr');
+    } else if (pathname.startsWith('/namaz')) {
+      setActiveTab('namaz');
     } else if (pathname.startsWith('/events')) {
       setActiveTab('termine');
     } else if (pathname.startsWith('/profile') || pathname.startsWith('/admin')) {
@@ -77,8 +75,6 @@ export default function BottomNav() {
       pathname.startsWith('/arrival')
     ) {
       setActiveTab('fahrt');
-    } else if (pathname.startsWith('/learn')) {
-      setActiveTab('lernen');
     } else {
       setActiveTab('');
     }
@@ -107,17 +103,14 @@ export default function BottomNav() {
         setShowFahrtSheet(true);
       }
     } else if (href) {
-      // Zikr und Termine teilen den Pfad /history — der Effekt oben laeuft dann
-      // nicht, weil sich nur der Parameter aendert. Deshalb hier direkt setzen,
-      // sonst bliebe die Hervorhebung auf dem alten Tab haengen.
       setActiveTab(id);
       router.push(href);
     }
   };
 
   const leftTabs = [
-    { id: 'zikr', label: 'Zikr', icon: BookOpen, href: '/history?tab=zikr' },
-    { id: 'termine', label: 'Termine', icon: CalendarDays, href: '/history?tab=events' },
+    { id: 'namaz', label: 'Namaz', icon: NamazIcon, href: '/namaz' },
+    { id: 'termine', label: 'Termine', icon: CalendarDays, href: '/events' },
   ];
   const rightTabs = [
     { id: 'fahrt', label: 'Fahrt', icon: Car, href: null },

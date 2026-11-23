@@ -205,7 +205,7 @@ async function handleEventReminders(logs: string[], debug: boolean) {
           {
             title: `📅 ${dayWord}: ${e.title}`,
             body: e.is_all_day ? `${dayWord} in der Bashier Moschee` : `${dayWord} um ${timeStr} Uhr`,
-            url: "/history?tab=events",
+            url: "/events",
           },
           logs
         ),
@@ -223,7 +223,7 @@ async function handleEventReminders(logs: string[], debug: boolean) {
           {
             title: `📅 Gleich: ${e.title}`,
             body: `Beginnt um ${timeStr} Uhr — bis gleich!`,
-            url: "/history?tab=events",
+            url: "/events",
           },
           logs
         ),

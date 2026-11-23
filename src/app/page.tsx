@@ -608,7 +608,7 @@ export default function HomePage() {
       <div className="stagger-3"><ZikrWidget userId={user.id} /></div>
 
       {/* ── Events Karte ── */}
-      <div onClick={() => router.push('/history?tab=events')}
+      <div onClick={() => router.push('/events')}
         className="stagger-5 app-card app-card-hover-blue p-4 cursor-pointer">
         <div className="flex items-center justify-between mb-3">
           <p className="text-[11px] font-bold uppercase tracking-[0.1em] flex items-center gap-1.5"

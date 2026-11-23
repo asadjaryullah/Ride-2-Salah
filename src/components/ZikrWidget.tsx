@@ -36,7 +36,7 @@ export default function ZikrWidget({ userId }: { userId: string }) {
 
   return (
     <div
-      onClick={() => router.push('/history?tab=zikr')}
+      onClick={() => router.push('/namaz')}
       className="w-full rounded-[18px] p-4 cursor-pointer app-card-hover-emerald active:scale-[0.98]"
       style={{
         background: 'var(--app-surface2)',
