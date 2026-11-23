@@ -25,12 +25,12 @@ export default function NamazIcon({
       strokeLinejoin="round"
       style={style}
     >
-      <path d="M12 2v2.2" />
-      <circle cx="12" cy="1.4" r="0.6" fill="currentColor" stroke="none" />
-      <path d="M7 11c0-3 2.2-5.2 5-5.2s5 2.2 5 5.2" />
-      <path d="M4.5 11h15" />
-      <path d="M6 11v7.5a1 1 0 0 0 1 1h2v-4a3 3 0 0 1 6 0v4h2a1 1 0 0 0 1-1V11" />
-      <path d="M3 19.5h18" />
+      <path d="M12 2.2v2.4" />
+      <circle cx="12" cy="1.3" r="0.65" fill="currentColor" stroke="none" />
+      <path d="M7 10a5 6.3 0 0 1 10 0" />
+      <path d="M7 10v9" />
+      <path d="M17 10v9" />
+      <path d="M4 19.3h16" />
     </svg>
   );
 }
