@@ -31,6 +31,7 @@ type Props = {
   activeDriverRide: any;
   activePassengerRide: any;
   todayRiderCount: number;
+  availableDrivers: { name: string; freeSeats: number }[];
 
   onOfferRide: () => void;
   onOpenDriverRide: () => void;
@@ -216,10 +217,28 @@ export default function TodayCard(p: Props) {
         {p.isApproved && !(hasActiveRide && isNext) && (
           <div className="mt-3 pt-3 flex flex-col gap-2"
             style={{ borderTop: '1px solid var(--app-border)' }}>
-            {p.rideRequestCount === 0 && p.driverMaybeCount === 0 && !p.myRideRequest && (
+            {p.rideRequestCount === 0 && p.driverMaybeCount === 0 && !p.myRideRequest && p.availableDrivers.length === 0 && (
               <p className="text-[11px] text-center" style={{ color: 'var(--app-text3)' }}>
                 Noch niemand für {shown.name} angemeldet — sei der Erste!
               </p>
+            )}
+
+            {/* Wer faehrt - direkt sichtbar, nicht erst nach Klick auf "Mitfahren" */}
+            {p.availableDrivers.length > 0 && (
+              <div className="rounded-xl p-2.5 space-y-1.5" style={{ background: 'var(--app-gold-dim)', border: '1px solid var(--app-gold)' }}>
+                <p className="text-[9px] font-black uppercase tracking-widest" style={{ color: 'var(--app-gold)' }}>
+                  Fährt zum {shown.name}
+                </p>
+                {p.availableDrivers.map((d, i) => (
+                  <div key={i} className="flex items-center gap-2">
+                    <Car size={13} style={{ color: 'var(--app-gold)' }} />
+                    <span className="text-xs font-semibold" style={{ color: 'var(--app-text)' }}>{d.name}</span>
+                    <span className="text-[10px]" style={{ color: 'var(--app-text3)' }}>
+                      · {d.freeSeats > 0 ? `${d.freeSeats} ${d.freeSeats === 1 ? 'Platz' : 'Plätze'} frei` : 'voll'}
+                    </span>
+                  </div>
+                ))}
+              </div>
             )}
 
             <button

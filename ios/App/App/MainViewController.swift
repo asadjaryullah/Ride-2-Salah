@@ -11,6 +11,17 @@ class MainViewController: CAPBridgeViewController {
     override func capacitorDidLoad() {
         webView?.allowsBackForwardNavigationGestures = true
 
+        /* Beim Ueberscrollen (Gummiband-Effekt am Seitenende) wurde die
+           native Bottom-Bar unbedienbar - die Bar liegt als eigene, fest
+           positionierte UIView neben der WKWebView, aber der native
+           Gummiband-Bounce der WKWebView kann waehrend des Zurueckfederns
+           kurzzeitig mit deren Touch-Handling kollidieren. Die App hat
+           ohnehin ein eigenes Pull-to-Refresh per Pointer-Events
+           (PullToRefresh.tsx), das natuerliche Scroll-Bounce wird nirgends
+           gebraucht - komplett abschalten behebt die Kollision an der
+           Wurzel statt nur Symptome zu kaschieren. */
+        webView?.scrollView.bounces = false
+
         /* Eigene, lokale Plugins (nicht aus einem npm-Paket) landen NICHT von
            selbst in capacitor.config.json's packageClassList - das generiert
            `npx cap sync` ausschliesslich aus den ios/-Ordnern installierter

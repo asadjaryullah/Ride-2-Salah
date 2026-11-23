@@ -23,15 +23,19 @@ type DayState = {
   requests: Record<string, { count: number; mineId: string | null }>;
   maybes: Record<string, { count: number; mine: boolean }>;
   riderCount: number;
+  /* Wer faehrt, direkt sichtbar statt erst nach einem Klick auf "Mitfahren" -
+     gleiche Gender-Filterung wie in passenger/list/page.tsx. */
+  drivers: Record<string, { name: string; freeSeats: number }[]>;
 };
 
-/** Holt Zusagen, Warteliste und Vielleicht-Fahrer für den ganzen Tag auf einmal. */
-async function fetchDayState(userId: string, today: string): Promise<DayState> {
-  const [commitRows, reqRows, maybeRows, bookings] = await Promise.all([
+/** Holt Zusagen, Warteliste, Vielleicht-Fahrer und aktive Fahrten fuer den ganzen Tag auf einmal. */
+async function fetchDayState(userId: string, today: string, gender: string): Promise<DayState> {
+  const [commitRows, reqRows, maybeRows, bookings, ridesRows] = await Promise.all([
     supabase.from('prayer_commitments').select('prayer_id,user_id').eq('prayer_date', today),
     supabase.from('ride_requests').select('id,prayer_id,user_id').eq('request_date', today).eq('status', 'waiting'),
     supabase.from('driver_maybe').select('prayer_id,driver_id').eq('maybe_date', today),
     supabase.from('bookings').select('*, rides!inner(ride_date)', { count: 'exact', head: true }).eq('status', 'accepted').eq('rides.ride_date', today),
+    supabase.from('rides').select('id,prayer_id,driver_name,seats').eq('ride_date', today).eq('status', 'active').eq('driver_gender', gender),
   ]);
 
   const commits: DayState['commits'] = {};
@@ -55,7 +59,20 @@ async function fetchDayState(userId: string, today: string): Promise<DayState> {
     if (r.driver_id === userId) e.mine = true;
   }
 
-  return { commits, requests, maybes, riderCount: bookings.count ?? 0 };
+  const rides = ridesRows.data ?? [];
+  const rideIds = rides.map((r) => r.id);
+  const { data: rideBookings } = rideIds.length
+    ? await supabase.from('bookings').select('ride_id').in('ride_id', rideIds).eq('status', 'accepted')
+    : { data: [] as { ride_id: string }[] };
+
+  const drivers: DayState['drivers'] = {};
+  for (const r of rides) {
+    const taken = rideBookings?.filter((b) => b.ride_id === r.id).length ?? 0;
+    const e = (drivers[r.prayer_id] ??= []);
+    e.push({ name: r.driver_name || 'Fahrer', freeSeats: Math.max(r.seats - taken, 0) });
+  }
+
+  return { commits, requests, maybes, riderCount: bookings.count ?? 0, drivers };
 }
 
 export default function HomePage() {
@@ -95,6 +112,7 @@ export default function HomePage() {
   const [driverMaybeCount, setDriverMaybeCount] = useState(0);
   const [myDriverMaybe, setMyDriverMaybe] = useState(false);
   const [todayRiderCount, setTodayRiderCount] = useState(0);
+  const [availableDrivers, setAvailableDrivers] = useState<{ name: string; freeSeats: number }[]>([]);
   const [togglingRequest, setTogglingRequest] = useState(false);
   const [togglingMaybe, setTogglingMaybe] = useState(false);
 
@@ -157,8 +175,8 @@ export default function HomePage() {
         if (mounted && events) setUpcomingEvents(events);
         if (mounted && linksData) setQuickLinks(linksData);
 
-        // Zusagen/Warteliste/Vielleicht fuer alle Gebete auf einmal
-        fetchDayState(session.user.id, today)
+        // Zusagen/Warteliste/Vielleicht/Fahrer fuer alle Gebete auf einmal
+        fetchDayState(session.user.id, today, profileData?.gender || 'male')
           .then((ds) => { if (mounted) setDayState(ds); })
           .catch(() => {});
 
@@ -228,6 +246,7 @@ export default function HomePage() {
     setDriverMaybeCount(m?.count ?? 0);
     setMyDriverMaybe(m?.mine ?? false);
     setTodayRiderCount(dayState.riderCount);
+    setAvailableDrivers(dayState.drivers[selectedPrayer.id] ?? []);
   }, [selectedPrayer, dayState]);
 
   const handleToggleCommitment = async () => {
@@ -534,6 +553,7 @@ export default function HomePage() {
           activeDriverRide={activeDriverRide}
           activePassengerRide={activePassengerRide}
           todayRiderCount={todayRiderCount}
+          availableDrivers={availableDrivers}
           onOfferRide={() => router.push('/select-prayer?role=driver')}
           onOpenDriverRide={() => router.push('/driver/dashboard')}
           onOpenPassengerRide={() => router.push(`/passenger/dashboard?rideId=${activePassengerRide?.rideId}`)}
