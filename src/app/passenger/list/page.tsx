@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTransitionRouter } from 'next-view-transitions';
 import { supabase } from '@/lib/supabase';
@@ -27,6 +27,9 @@ function PassengerListContent() {
   const [bookingSuccess, setBookingSuccess] = useState<BookingSuccess | null>(null);
   // Bereits gebuchte Fahrt für dieses Gebet — als Hinweis, nicht als Weiterleitung
   const [existingRideId, setExistingRideId] = useState<string | null>(null);
+  // Nur einmal warnen, nicht bei jedem 10s-Poll erneut - sonst Toast-Spam,
+  // falls die Verbindung laenger weg ist.
+  const hasShownFetchErrorRef = useRef(false);
 
   useEffect(() => {
     const fetchRidesAndBookings = async () => {
@@ -69,9 +72,14 @@ function PassengerListContent() {
         .eq('driver_gender', myGender);
 
       if (ridesError || !ridesData) {
+        if (!hasShownFetchErrorRef.current) {
+          hasShownFetchErrorRef.current = true;
+          toast.error("Fahrten konnten nicht geladen werden. Bitte prüfe deine Verbindung.");
+        }
         setLoading(false);
         return;
       }
+      hasShownFetchErrorRef.current = false;
 
       const rideIds = ridesData.map((r: any) => r.id);
       const { data: bookingsData } = await supabase

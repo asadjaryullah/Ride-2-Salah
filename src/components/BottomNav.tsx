@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTransitionRouter } from 'next-view-transitions';
-import { Home, Car, CalendarDays, UserRound, Navigation, BookOpen } from 'lucide-react';
+import { Home, Car, CalendarDays, UserRound, BookOpen } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { todayBerlin } from '@/lib/date';
 import { Capacitor } from '@capacitor/core';
@@ -28,7 +28,7 @@ const LEFT_TABS = [
   { id: 'termine', label: 'Termine', icon: CalendarDays, href: '/events' },
 ];
 const RIGHT_TABS = [
-  { id: 'fahrt', label: 'Fahrt', icon: Car, href: null as string | null },
+  { id: 'fahrt', label: 'Fahrt', icon: Car, href: '/fahrt' },
   { id: 'profil', label: 'Profil', icon: UserRound, href: '/profile' },
 ];
 const ALL_TABS = [...LEFT_TABS, ...RIGHT_TABS];
@@ -44,23 +44,18 @@ function getEffectiveTheme(): 'light' | 'dark' {
 export default function BottomNav() {
   const router = useTransitionRouter();
   const pathname = usePathname();
-  const [showFahrtSheet, setShowFahrtSheet] = useState(false);
   const [activeTab, setActiveTab] = useState<string>('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [sheetOffset, setSheetOffset] = useState(0);
-  const dragStartY = useRef(0);
-  const dragStartTime = useRef(0);
 
   // Nur iOS hat bisher eine echte native Bar (NativeBottomBarView.swift) -
   // Android faellt bis zum ersten Android-Build auf die HTML-Bar zurueck.
   const isNative = Capacitor.getPlatform() === 'ios';
 
   /* Aktive Fahrt heute (als Fahrer oder Mitfahrer) - damit der "Fahrt"-Knopf
-     unten direkt zur eigenen Uebersicht springt, statt immer wieder dieselbe
-     Rollenauswahl zu zeigen, die man fuer heute schon getroffen hat. Gleiche
-     Abfrage wie auf der Startseite (page.tsx), hier nochmal, weil BottomNav
-     im Layout global sitzt und keinen Zugriff auf den Zustand der Startseite
-     hat. */
+     unten direkt zur eigenen Uebersicht springt, statt immer wieder die
+     eigene /fahrt-Seite zu zeigen, wenn fuer heute schon eine Rolle feststeht.
+     Gleiche Abfrage wie auf der Startseite (page.tsx), hier nochmal, weil
+     BottomNav im Layout global sitzt und keinen Zugriff auf deren Zustand hat. */
   const [activeRideRoute, setActiveRideRoute] = useState<string | null>(null);
 
   useEffect(() => {
@@ -97,6 +92,7 @@ export default function BottomNav() {
     } else if (pathname.startsWith('/profile') || pathname.startsWith('/admin')) {
       setActiveTab('profil');
     } else if (
+      pathname.startsWith('/fahrt') ||
       pathname.startsWith('/select-prayer') ||
       pathname.startsWith('/passenger/list') ||
       pathname.startsWith('/arrival')
@@ -117,30 +113,21 @@ export default function BottomNav() {
   }, [pathname]);
 
   const handleTabPress = (id: string, href: string | null) => {
-    if (id === 'fahrt') {
+    if (id === 'fahrt' && activeRideRoute) {
       // Fuer heute schon eine Rolle gewaehlt? Dann direkt zur eigenen
-      // Uebersicht, statt die Auswahl (Fahrer/Mitfahrer) nochmal zu zeigen,
-      // die fuer heute bereits beantwortet ist.
-      if (activeRideRoute) {
-        router.push(activeRideRoute);
-      } else {
-        setShowFahrtSheet(true);
-      }
+      // Uebersicht, statt nochmal die /fahrt-Seite zu zeigen, die fuer
+      // heute bereits beantwortet ist.
+      router.push(activeRideRoute);
     } else if (href) {
       setActiveTab(id);
       router.push(href);
     }
   };
 
-  /* Sichtbarkeit + aktiver Tab an die native Bar melden, unabhaengig davon,
-     ob die Komponente am Ende ueberhaupt HTML rendert (die fruehen Returns
-     unten betreffen nur die Web-JSX, nicht diese Effekte).
-
-     !showFahrtSheet ist hier kein Stilmittel, sondern noetig: die native Bar
-     liegt als eigene UIKit-Ebene UEBER der kompletten WKWebView - ein
-     web-gerendertes Sheet mit noch so hohem z-index kann sie nie verdecken.
-     Ohne diese Zeile schien die Bar durch das Fahrt-Sheet hindurch. */
-  const visible = isLoggedIn && !HIDDEN_PATHS.some(p => pathname.startsWith(p)) && !showFahrtSheet;
+  // Sichtbarkeit + aktiver Tab an die native Bar melden, unabhaengig davon,
+  // ob die Komponente am Ende ueberhaupt HTML rendert (die fruehen Returns
+  // unten betreffen nur die Web-JSX, nicht diese Effekte).
+  const visible = isLoggedIn && !HIDDEN_PATHS.some(p => pathname.startsWith(p));
   useEffect(() => {
     if (!isNative) return;
     NativeBottomBar.setState({ visible, activeTab }).catch(() => {});
@@ -179,9 +166,6 @@ export default function BottomNav() {
 
   if (!isLoggedIn) return null;
   if (HIDDEN_PATHS.some(p => pathname.startsWith(p))) return null;
-
-  const leftTabs = LEFT_TABS;
-  const rightTabs = RIGHT_TABS;
 
   const renderTab = (tab: { id: string; label: string; icon: React.ElementType; href: string | null }) => {
     const active = activeTab === tab.id;
@@ -222,8 +206,8 @@ export default function BottomNav() {
     <>
       {/* ── Bottom Navigation Bar ─────────────────────────────────────────── */}
       {/* Auf iOS uebernimmt NativeBottomBarView.swift die eigentliche Bar
-          (siehe die Sync-Effekte oben) - hier nur noch der Fahrt-Sheet, der
-          weiterhin web-gerendert ueber der WKWebView liegt. */}
+          (siehe die Sync-Effekte oben) - diese Komponente synchronisiert dort
+          nur noch Zustand, rendert aber kein eigenes HTML. */}
       {!isNative && (
       <nav
         className="fixed bottom-0 left-0 right-0 z-50 flex items-stretch select-none"
@@ -237,7 +221,7 @@ export default function BottomNav() {
         }}
       >
         {/* Left tabs */}
-        {leftTabs.map(renderTab)}
+        {LEFT_TABS.map(renderTab)}
 
         {/* Center Start button */}
         <div className="flex-1 flex flex-col items-center justify-center py-3">
@@ -274,125 +258,8 @@ export default function BottomNav() {
         </div>
 
         {/* Right tabs */}
-        {rightTabs.map(renderTab)}
+        {RIGHT_TABS.map(renderTab)}
       </nav>
-      )}
-
-      {/* ── Fahrt Bottom Sheet ────────────────────────────────────────────── */}
-      {showFahrtSheet && (
-        <div
-          className="fixed inset-0 z-[60] flex items-end animate-in fade-in duration-150"
-          style={{ background: 'rgba(0,0,0,0.55)' }}
-          onClick={() => { setShowFahrtSheet(false); setSheetOffset(0); }}
-        >
-          <div
-            className="w-full rounded-t-3xl animate-in slide-in-from-bottom-4 duration-300 ease-out"
-            style={{
-              background: 'var(--app-surface2)',
-              border: '1px solid var(--app-border)',
-              paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))',
-              transform: `translateY(${sheetOffset}px)`,
-              transition: sheetOffset === 0 ? 'transform 0.35s cubic-bezier(0.32, 0.72, 0, 1)' : 'none',
-            }}
-            onClick={e => e.stopPropagation()}
-          >
-            {/* Drag handle */}
-            <div
-              className="flex justify-center pt-4 pb-5 cursor-grab active:cursor-grabbing"
-              style={{ touchAction: 'none' }}
-              onPointerDown={(e) => {
-                e.currentTarget.setPointerCapture(e.pointerId);
-                dragStartY.current = e.clientY;
-                dragStartTime.current = Date.now();
-              }}
-              onPointerMove={(e) => {
-                const dy = e.clientY - dragStartY.current;
-                if (dy > 0) setSheetOffset(dy);
-              }}
-              onPointerUp={(e) => {
-                const dy = e.clientY - dragStartY.current;
-                const dt = Date.now() - dragStartTime.current;
-                const velocity = dy / dt;
-                if (velocity > 0.4 || dy > 100) {
-                  setShowFahrtSheet(false);
-                  setSheetOffset(0);
-                } else {
-                  setSheetOffset(0);
-                }
-              }}
-            >
-              <div className="w-10 h-1 rounded-full" style={{ background: 'var(--app-border)' }} />
-            </div>
-
-            <div className="px-6 pb-2">
-              <h3
-                className="text-base font-extrabold text-center mb-1"
-                style={{ color: 'var(--app-text)', letterSpacing: '-0.01em' }}
-              >
-                Wie fährst du heute?
-              </h3>
-              <p className="text-xs text-center mb-5" style={{ color: 'var(--app-text3)' }}>
-                Wähle deine Rolle für diese Fahrt
-              </p>
-
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                {/* Fahrer */}
-                <button
-                  onClick={() => {
-                    setShowFahrtSheet(false);
-                    router.push('/select-prayer?role=driver');
-                  }}
-                  className="rounded-2xl p-5 text-left active:scale-[0.96] transition-transform"
-                  style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', background: 'var(--app-gold-dim)', border: '1px solid var(--app-gold)' }}
-                >
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
-                    style={{ background: 'rgba(201,162,60,0.2)', border: '1px solid var(--app-gold)' }}
-                  >
-                    <Car size={20} style={{ color: 'var(--app-gold)' }} />
-                  </div>
-                  <p className="font-extrabold text-[15px]" style={{ color: 'var(--app-gold)' }}>
-                    Fahrer
-                  </p>
-                  <p className="text-xs mt-0.5" style={{ color: 'var(--app-text2)' }}>
-                    Plätze anbieten
-                  </p>
-                </button>
-
-                {/* Mitfahrer */}
-                <button
-                  onClick={() => {
-                    setShowFahrtSheet(false);
-                    router.push('/select-prayer?role=passenger');
-                  }}
-                  className="rounded-2xl p-5 text-left active:scale-[0.96] transition-transform"
-                  style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', background: 'var(--app-blue-dim)', border: '1px solid var(--app-blue)' }}
-                >
-                  <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
-                    style={{ background: 'rgba(91,127,255,0.15)', border: '1px solid var(--app-blue)' }}
-                  >
-                    <Navigation size={20} style={{ color: 'var(--app-blue)' }} />
-                  </div>
-                  <p className="font-extrabold text-[15px]" style={{ color: 'var(--app-blue)' }}>
-                    Mitfahrer
-                  </p>
-                  <p className="text-xs mt-0.5" style={{ color: 'var(--app-text2)' }}>
-                    Fahrt finden
-                  </p>
-                </button>
-              </div>
-
-              <button
-                onClick={() => setShowFahrtSheet(false)}
-                className="w-full py-3 rounded-xl text-sm font-semibold active:scale-[0.98] transition-transform"
-                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', background: 'var(--app-surface1)', border: '1px solid var(--app-border)', color: 'var(--app-text3)' }}
-              >
-                Abbrechen
-              </button>
-            </div>
-          </div>
-        </div>
       )}
     </>
   );

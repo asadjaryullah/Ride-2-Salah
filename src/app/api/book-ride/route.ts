@@ -23,19 +23,46 @@ export async function POST(request: Request) {
 
     if (passenger_id !== userData.user.id) return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
+    /* Die Platz-/Status-Pruefung lief bisher nur clientseitig (passenger/list)
+       - zwei Leute, die fast gleichzeitig auf denselben letzten Platz tippen,
+       oder ein Tipp auf eine Fahrt, die der Fahrer gerade storniert hat,
+       konnten beide unbemerkt durchgehen. Hier serverseitig nochmal pruefen,
+       direkt vor dem Insert. */
+    const { data: ride, error: rideErr } = await supabase
+      .from('rides')
+      .select('driver_id, status, seats')
+      .eq('id', ride_id)
+      .single();
+
+    if (rideErr || !ride) return NextResponse.json({ error: "Fahrt nicht gefunden" }, { status: 404 });
+    if (ride.status !== 'active') return NextResponse.json({ error: "Diese Fahrt ist nicht mehr aktiv" }, { status: 409 });
+
+    const { count: takenSeats } = await supabase
+      .from('bookings')
+      .select('id', { count: 'exact', head: true })
+      .eq('ride_id', ride_id)
+      .eq('status', 'accepted');
+
+    if ((takenSeats ?? 0) >= ride.seats) {
+      return NextResponse.json({ error: "Diese Fahrt ist bereits voll besetzt" }, { status: 409 });
+    }
+
+    const { data: existing } = await supabase
+      .from('bookings')
+      .select('id')
+      .eq('ride_id', ride_id)
+      .eq('passenger_id', passenger_id)
+      .eq('status', 'accepted')
+      .maybeSingle();
+
+    if (existing) return NextResponse.json({ error: "Du hast diese Fahrt bereits gebucht" }, { status: 409 });
+
     // Buchung speichern
     const { error: dbError } = await supabase.from('bookings').insert({
       ride_id, passenger_id, passenger_name, passenger_phone, pickup_lat, pickup_lon, status: 'accepted'
     });
 
     if (dbError) throw new Error("DB Fehler: " + dbError.message);
-
-    // Fahrer-ID holen und Push senden
-    const { data: ride } = await supabase
-      .from('rides')
-      .select('driver_id')
-      .eq('id', ride_id)
-      .single();
 
     if (ride?.driver_id) {
       await sendPushToUser(ride.driver_id, {
