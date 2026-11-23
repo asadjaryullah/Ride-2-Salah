@@ -333,13 +333,21 @@ export default function HomePage() {
 
   /* ── LADESCREEN ── */
   if (loading) {
+    /* Bruecke zwischen nativem Splash (Mark + voller Schriftzug, siehe
+       resources/splash.png) und der eigentlichen Startseite: dieselbe Marke,
+       animiert statt statisch, damit der Uebergang nicht wie ein Bruch in
+       zwei verschiedene Bildschirme wirkt, sondern wie ein durchgehendes
+       Einblenden. */
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4" style={{ background: 'var(--app-bg)' }}>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3" style={{ background: 'var(--app-bg)' }}>
         <div className="relative w-20 h-20 animate-float">
           <Image src="/icon.png" alt="Logo" fill className="object-contain"
             style={{ filter: 'drop-shadow(0 0 20px var(--app-gold-glow))' }} />
         </div>
-        <Loader2 className="animate-spin h-5 w-5" style={{ color: 'var(--app-gold)' }} />
+        <p className="stagger-1 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--app-gold)' }}>
+          Ride2Salah
+        </p>
+        <Loader2 className="animate-spin h-4 w-4 mt-1" style={{ color: 'var(--app-text3)' }} />
       </div>
     );
   }

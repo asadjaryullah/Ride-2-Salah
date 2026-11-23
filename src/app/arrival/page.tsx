@@ -1,10 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTransitionRouter } from 'next-view-transitions';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckCircle2, Droplets, BookOpen, Moon, ArrowRight } from "lucide-react";
+import { hapticTap, hapticSuccess } from "@/lib/haptics";
 
 export default function ArrivalPage() {
   const router = useTransitionRouter();
@@ -15,13 +16,26 @@ export default function ArrivalPage() {
     rightFoot: false,
     nawafil: false
   });
+  const [celebrate, setCelebrate] = useState(false);
 
   const toggle = (key: keyof typeof checked) => {
+    hapticTap();
     setChecked(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
   const completedCount = Object.values(checked).filter(Boolean).length;
   const progress = (completedCount / 4) * 100;
+
+  // Einmaliger, bewusster Moment statt Dauerfeuer bei jedem einzelnen Haken:
+  // erst wenn WIRKLICH alles erledigt ist, nicht bei jedem Zwischenschritt.
+  useEffect(() => {
+    if (completedCount === 4) {
+      hapticSuccess();
+      setCelebrate(true);
+    } else {
+      setCelebrate(false);
+    }
+  }, [completedCount]);
 
   return (
     <main className="min-h-screen flex flex-col items-center p-6 pb-nav-safe" style={{ background: 'var(--app-bg)' }}>
@@ -65,7 +79,7 @@ export default function ArrivalPage() {
       </Card>
 
       {/* CHECKLISTE */}
-      <div className="w-full max-w-md space-y-4">
+      <div className={`w-full max-w-md space-y-4 rounded-2xl ${celebrate ? 'animate-section-celebrate' : ''}`}>
         <h3 className="text-sm font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--app-text2)' }}>
           Deine Sunnah Checkliste
         </h3>
@@ -101,10 +115,16 @@ export default function ArrivalPage() {
                 <p className={`font-bold ${isChecked ? 'line-through' : ''}`} style={{ color: isChecked ? 'var(--app-emerald)' : 'var(--app-text)' }}>{label}</p>
                 <p className="text-xs" style={{ color: 'var(--app-text3)' }}>{sub}</p>
               </div>
-              {isChecked && <CheckCircle2 style={{ color: 'var(--app-emerald)' }} />}
+              {isChecked && <CheckCircle2 className="animate-pop" style={{ color: 'var(--app-emerald)' }} />}
             </div>
           );
         })}
+
+        {celebrate && (
+          <p className="animate-in fade-in duration-300 text-center text-sm font-semibold pt-1" style={{ color: 'var(--app-emerald)' }}>
+            Fertig — möge Allah dein Gebet annehmen 🤲
+          </p>
+        )}
       </div>
 
       <Button

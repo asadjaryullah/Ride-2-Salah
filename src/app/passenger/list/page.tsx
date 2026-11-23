@@ -11,6 +11,7 @@ import { todayBerlin } from '@/lib/date';
 import { openWhatsAppChat } from '@/lib/share';
 import { getCurrentPosition } from '@/lib/geolocation';
 import { Capacitor } from '@capacitor/core';
+import { hapticSuccess } from '@/lib/haptics';
 
 type BookingSuccess = { driverName: string; driverPhone: string; rideId: string };
 
@@ -151,6 +152,7 @@ function PassengerListContent() {
           if (!response.ok) throw new Error(result.error);
 
           const bookedRide = rides.find(r => r.id === rideId);
+          hapticSuccess();
           setBookingSuccess({
             driverName: bookedRide?.driver_name || "Fahrer",
             driverPhone: bookedRide?.driver_phone || "",
@@ -287,7 +289,7 @@ function PassengerListContent() {
 
             <div className="flex justify-center">
               <div className="p-4 rounded-full" style={{ background: 'var(--app-emerald-dim)' }}>
-                <CheckCircle2 className="h-10 w-10" style={{ color: 'var(--app-emerald)' }} />
+                <CheckCircle2 className="h-10 w-10 animate-pop" style={{ color: 'var(--app-emerald)' }} />
               </div>
             </div>
 

@@ -252,12 +252,12 @@
 .animate-pulse-ring  { animation: pulse-ring 1.4s cubic-bezier(0.4,0,0.6,1) infinite; }
 .animate-glow-pulse  { animation: glow-pulse 2.5s ease-in-out infinite; }
 
-.stagger-1 { animation: slide-up 0.28s ease-out both 0s; }
-.stagger-2 { animation: slide-up 0.28s ease-out both 0.04s; }
-.stagger-3 { animation: slide-up 0.28s ease-out both 0.08s; }
-.stagger-4 { animation: slide-up 0.28s ease-out both 0.12s; }
-.stagger-5 { animation: slide-up 0.28s ease-out both 0.16s; }
-.stagger-6 { animation: slide-up 0.28s ease-out both 0.20s; }
+.stagger-1 { animation: slide-up 0.28s var(--ease-out) both 0s; }
+.stagger-2 { animation: slide-up 0.28s var(--ease-out) both 0.04s; }
+.stagger-3 { animation: slide-up 0.28s var(--ease-out) both 0.08s; }
+.stagger-4 { animation: slide-up 0.28s var(--ease-out) both 0.12s; }
+.stagger-5 { animation: slide-up 0.28s var(--ease-out) both 0.16s; }
+.stagger-6 { animation: slide-up 0.28s var(--ease-out) both 0.20s; }
 
 /* ═══════════════════════════════════════════
    APP PRIMITIVE KLASSEN
