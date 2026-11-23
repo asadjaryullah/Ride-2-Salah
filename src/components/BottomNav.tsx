@@ -133,10 +133,15 @@ export default function BottomNav() {
     }
   };
 
-  // Sichtbarkeit + aktiver Tab an die native Bar melden, unabhaengig davon,
-  // ob die Komponente am Ende ueberhaupt HTML rendert (die fruehen Returns
-  // unten betreffen nur die Web-JSX, nicht diese Effekte).
-  const visible = isLoggedIn && !HIDDEN_PATHS.some(p => pathname.startsWith(p));
+  /* Sichtbarkeit + aktiver Tab an die native Bar melden, unabhaengig davon,
+     ob die Komponente am Ende ueberhaupt HTML rendert (die fruehen Returns
+     unten betreffen nur die Web-JSX, nicht diese Effekte).
+
+     !showFahrtSheet ist hier kein Stilmittel, sondern noetig: die native Bar
+     liegt als eigene UIKit-Ebene UEBER der kompletten WKWebView - ein
+     web-gerendertes Sheet mit noch so hohem z-index kann sie nie verdecken.
+     Ohne diese Zeile schien die Bar durch das Fahrt-Sheet hindurch. */
+  const visible = isLoggedIn && !HIDDEN_PATHS.some(p => pathname.startsWith(p)) && !showFahrtSheet;
   useEffect(() => {
     if (!isNative) return;
     NativeBottomBar.setState({ visible, activeTab }).catch(() => {});
