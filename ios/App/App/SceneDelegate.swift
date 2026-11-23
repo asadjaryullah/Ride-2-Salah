@@ -8,7 +8,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else { return }
 
         window = UIWindow(windowScene: windowScene)
-        window?.rootViewController = CAPBridgeViewController()
+        // War bisher CAPBridgeViewController() direkt - dadurch griff der
+        // Swipe-Back-Fix in MainViewController (capacitorDidLoad-Override)
+        // nie, und jetzt auch die native Bottom-Bar nicht.
+        window?.rootViewController = MainViewController()
         window?.makeKeyAndVisible()
 
         SceneDelegateProxy.shared.scene(scene, willConnectTo: session, options: connectionOptions)

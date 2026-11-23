@@ -10,5 +10,12 @@ import Capacitor
 class MainViewController: CAPBridgeViewController {
     override func capacitorDidLoad() {
         webView?.allowsBackForwardNavigationGestures = true
+
+        // Haengt die native Bottom-Bar genau einmal an, sobald die
+        // WebView/View-Hierarchie sicher bereit ist - vom Plugin selbst aus
+        // (load()) waere das zu frueh.
+        if let barPlugin = bridge?.plugin(withName: "NativeBottomBar") as? NativeBottomBarPlugin {
+            barPlugin.attach(to: view)
+        }
     }
 }

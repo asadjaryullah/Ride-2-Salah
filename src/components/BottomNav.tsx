@@ -7,6 +7,8 @@ import { Home, Car, CalendarDays, UserRound, Navigation } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { todayBerlin } from '@/lib/date';
 import NamazIcon from '@/components/icons/NamazIcon';
+import { Capacitor } from '@capacitor/core';
+import { NativeBottomBar } from '@/lib/native-bottom-bar';
 
 const HIDDEN_PATHS = [
   '/login',
@@ -18,6 +20,28 @@ const HIDDEN_PATHS = [
   '/offline',
 ];
 
+/* Ausserhalb der Komponente, weil sich nichts davon je aendert - die
+   native iOS-Bar muss beim Zurueckrouten von 'tabTapped' dieselben
+   href-Werte kennen, ohne dass dafuer bei jedem Render neue Objekte
+   entstehen muessen. */
+const LEFT_TABS = [
+  { id: 'namaz', label: 'Namaz', icon: NamazIcon, href: '/namaz' },
+  { id: 'termine', label: 'Termine', icon: CalendarDays, href: '/events' },
+];
+const RIGHT_TABS = [
+  { id: 'fahrt', label: 'Fahrt', icon: Car, href: null as string | null },
+  { id: 'profil', label: 'Profil', icon: UserRound, href: '/profile' },
+];
+const ALL_TABS = [...LEFT_TABS, ...RIGHT_TABS];
+
+// Gleiches Muster wie StatusBarManager.tsx - Theme folgt entweder dem
+// manuell gesetzten data-theme-Attribut oder der Systemeinstellung.
+function getEffectiveTheme(): 'light' | 'dark' {
+  const attr = document.documentElement.getAttribute('data-theme');
+  if (attr === 'dark' || attr === 'light') return attr;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
 export default function BottomNav() {
   const router = useTransitionRouter();
   const pathname = usePathname();
@@ -27,6 +51,10 @@ export default function BottomNav() {
   const [sheetOffset, setSheetOffset] = useState(0);
   const dragStartY = useRef(0);
   const dragStartTime = useRef(0);
+
+  // Nur iOS hat bisher eine echte native Bar (NativeBottomBarView.swift) -
+  // Android faellt bis zum ersten Android-Build auf die HTML-Bar zurueck.
+  const isNative = Capacitor.getPlatform() === 'ios';
 
   /* Aktive Fahrt heute (als Fahrer oder Mitfahrer) - damit der "Fahrt"-Knopf
      unten direkt zur eigenen Uebersicht springt, statt immer wieder dieselbe
@@ -89,9 +117,6 @@ export default function BottomNav() {
     }
   }, [pathname]);
 
-  if (!isLoggedIn) return null;
-  if (HIDDEN_PATHS.some(p => pathname.startsWith(p))) return null;
-
   const handleTabPress = (id: string, href: string | null) => {
     if (id === 'fahrt') {
       // Fuer heute schon eine Rolle gewaehlt? Dann direkt zur eigenen
@@ -108,14 +133,51 @@ export default function BottomNav() {
     }
   };
 
-  const leftTabs = [
-    { id: 'namaz', label: 'Namaz', icon: NamazIcon, href: '/namaz' },
-    { id: 'termine', label: 'Termine', icon: CalendarDays, href: '/events' },
-  ];
-  const rightTabs = [
-    { id: 'fahrt', label: 'Fahrt', icon: Car, href: null },
-    { id: 'profil', label: 'Profil', icon: UserRound, href: '/profile' },
-  ];
+  // Sichtbarkeit + aktiver Tab an die native Bar melden, unabhaengig davon,
+  // ob die Komponente am Ende ueberhaupt HTML rendert (die fruehen Returns
+  // unten betreffen nur die Web-JSX, nicht diese Effekte).
+  const visible = isLoggedIn && !HIDDEN_PATHS.some(p => pathname.startsWith(p));
+  useEffect(() => {
+    if (!isNative) return;
+    NativeBottomBar.setState({ visible, activeTab }).catch(() => {});
+  }, [isNative, visible, activeTab]);
+
+  useEffect(() => {
+    if (!isNative) return;
+    const apply = () => NativeBottomBar.setTheme({ theme: getEffectiveTheme() }).catch(() => {});
+    apply();
+
+    const observer = new MutationObserver(apply);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+    const media = window.matchMedia('(prefers-color-scheme: dark)');
+    media.addEventListener('change', apply);
+
+    return () => {
+      observer.disconnect();
+      media.removeEventListener('change', apply);
+    };
+  }, [isNative]);
+
+  useEffect(() => {
+    if (!isNative) return;
+    const sub = NativeBottomBar.addListener('tabTapped', ({ tab }) => {
+      if (tab === 'home') {
+        router.push('/');
+        return;
+      }
+      const match = ALL_TABS.find((t) => t.id === tab);
+      if (match) handleTabPress(match.id, match.href);
+    });
+    return () => { sub.then((handle) => handle.remove()); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isNative, activeRideRoute]);
+
+  if (!isLoggedIn) return null;
+  if (HIDDEN_PATHS.some(p => pathname.startsWith(p))) return null;
+
+  const leftTabs = LEFT_TABS;
+  const rightTabs = RIGHT_TABS;
 
   const renderTab = (tab: { id: string; label: string; icon: React.ElementType; href: string | null }) => {
     const active = activeTab === tab.id;
@@ -155,6 +217,10 @@ export default function BottomNav() {
   return (
     <>
       {/* ── Bottom Navigation Bar ─────────────────────────────────────────── */}
+      {/* Auf iOS uebernimmt NativeBottomBarView.swift die eigentliche Bar
+          (siehe die Sync-Effekte oben) - hier nur noch der Fahrt-Sheet, der
+          weiterhin web-gerendert ueber der WKWebView liegt. */}
+      {!isNative && (
       <nav
         className="fixed bottom-0 left-0 right-0 z-50 flex items-stretch select-none"
         style={{
@@ -206,6 +272,7 @@ export default function BottomNav() {
         {/* Right tabs */}
         {rightTabs.map(renderTab)}
       </nav>
+      )}
 
       {/* ── Fahrt Bottom Sheet ────────────────────────────────────────────── */}
       {showFahrtSheet && (
