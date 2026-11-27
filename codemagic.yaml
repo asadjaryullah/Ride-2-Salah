@@ -8,9 +8,7 @@ workflows:
     environment:
       ios_signing:
         distribution_type: app_store
-        bundle_identifier:
-          - app.ride2salah.mobile
-          - app.ride2salah.mobile.PrayerWidget
+        bundle_identifier: app.ride2salah.mobile
       vars:
         XCODE_PROJECT: "ios/App/App.xcodeproj"
         XCODE_SCHEME: "App"
