@@ -402,6 +402,27 @@
 @keyframes fade-out      { to   { opacity: 0; transform: scale(0.985); } }
 @keyframes fade-in-view  { from { opacity: 0; transform: translateY(10px); } }
 
+/* Wischen zwischen Tabs (SwipeNavigator.tsx) soll sich wie Seiten anfuehlen,
+   die man zur Seite schiebt, nicht wie das generische Ein-/Ausblenden eines
+   Tab-Tipps - data-nav-direction wird kurz vor der Navigation gesetzt und
+   danach wieder entfernt, nur dann greifen diese spezifischeren Regeln. */
+:root[data-nav-direction="forward"]::view-transition-old(root) {
+  animation: 220ms var(--ease-out) both swipe-out-left;
+}
+:root[data-nav-direction="forward"]::view-transition-new(root) {
+  animation: 220ms var(--ease-out) both swipe-in-right;
+}
+:root[data-nav-direction="back"]::view-transition-old(root) {
+  animation: 220ms var(--ease-out) both swipe-out-right;
+}
+:root[data-nav-direction="back"]::view-transition-new(root) {
+  animation: 220ms var(--ease-out) both swipe-in-left;
+}
+@keyframes swipe-out-left  { to   { opacity: 0.7; transform: translateX(-28%); } }
+@keyframes swipe-in-right  { from { opacity: 0.4; transform: translateX(100%); } }
+@keyframes swipe-out-right { to   { opacity: 0.7; transform: translateX(28%); } }
+@keyframes swipe-in-left   { from { opacity: 0.4; transform: translateX(-100%); } }
+
 /* ═══════════════════════════════════════════
    REDUCED MOTION
 ═══════════════════════════════════════════ */
@@ -425,7 +446,11 @@
   .btn-gold, .btn-emerald, .app-card {
     transition: opacity 0.15s ease;
   }
-  ::view-transition-old(root), ::view-transition-new(root) {
+  ::view-transition-old(root), ::view-transition-new(root),
+  :root[data-nav-direction="forward"]::view-transition-old(root),
+  :root[data-nav-direction="forward"]::view-transition-new(root),
+  :root[data-nav-direction="back"]::view-transition-old(root),
+  :root[data-nav-direction="back"]::view-transition-new(root) {
     animation: none;
   }
 }

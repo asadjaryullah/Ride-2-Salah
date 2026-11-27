@@ -56,10 +56,18 @@ export default function SwipeNavigator() {
       if (idx === -1) return;
 
       // Nach links wischen = vorwaerts (naechster Tab rechts), nach rechts = zurueck.
-      const nextIdx = dx < 0 ? idx + 1 : idx - 1;
+      const forward = dx < 0;
+      const nextIdx = forward ? idx + 1 : idx - 1;
       if (nextIdx < 0 || nextIdx >= SWIPE_ORDER.length) return;
 
+      /* Signalisiert der CSS in globals.css, dass die naechste Seiten-
+         Transition dem Wisch folgen soll (Hinein-/Hinausschieben) statt des
+         generischen Ein-/Ausblendens bei einem normalen Tab-Tipp. Wird nach
+         der Transition wieder entfernt, sonst wuerde ein spaeterer Tab-Tipp
+         faelschlich auch seitlich schieben. */
+      document.documentElement.setAttribute('data-nav-direction', forward ? 'forward' : 'back');
       router.push(SWIPE_ORDER[nextIdx].href);
+      setTimeout(() => document.documentElement.removeAttribute('data-nav-direction'), 500);
     };
 
     document.addEventListener('pointerdown', onDown, { passive: true });
