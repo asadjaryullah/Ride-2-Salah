@@ -374,12 +374,18 @@ export default function HomePage() {
   /* ── LADESCREEN ── */
   if (loading || (showIntro && !splashMinElapsed)) {
     if (!showIntro) {
-      // Wiederkehrender Besuch: kein Intro mehr, nur ein schlichter Lader,
-      // genau so lange wie der echte Ladezustand tatsaechlich braucht.
+      // Wiederkehrender Besuch: nicht mehr die grosse Salam-Einfuehrung,
+      // aber weiterhin animiert (Puls + Schweben wie zuvor) statt eines
+      // starren Standbilds - laeuft genau so lange wie der echte
+      // Ladezustand tatsaechlich braucht, ohne künstliche Mindestzeit.
       return (
         <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--app-bg)' }}>
-          <div className="relative w-14 h-14 opacity-90">
-            <Image src="/mark.png" alt="Ride2Salah" fill className="object-contain" />
+          <div className="relative w-16 h-16 flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full animate-pulse-ring" style={{ background: 'var(--app-gold)' }} />
+            <div className="relative w-11 h-11 animate-float">
+              <Image src="/mark.png" alt="Ride2Salah" fill className="object-contain"
+                style={{ filter: 'drop-shadow(0 0 20px var(--app-gold-glow))' }} />
+            </div>
           </div>
         </div>
       );
