@@ -238,22 +238,13 @@
   to   { transform: rotate(360deg); }
 }
 
-/* Ladescreen-Intro: "Salam" blendet kurz ein/aus, dann die Marke - beide
-   Phasen in EINER Animation mit fester Dauer (siehe SPLASH_MS in page.tsx),
-   damit Text und Logo nie gleichzeitig sichtbar sind und das Timing exakt
-   zum Mindest-Anzeige-Timer passt. */
-@keyframes splash-salam {
-  0%   { opacity: 0; transform: scale(0.96); }
-  14%  { opacity: 1; transform: scale(1); }
-  48%  { opacity: 1; transform: scale(1); }
-  64%  { opacity: 0; transform: scale(1.03); }
-  100% { opacity: 0; }
-}
-@keyframes splash-brand {
-  0%   { opacity: 0; transform: scale(0.94); }
-  58%  { opacity: 0; transform: scale(0.94); }
-  78%  { opacity: 1; transform: scale(1); }
-  100% { opacity: 1; transform: scale(1); }
+/* Ladescreen-Intro (nur beim allerersten Start, siehe page.tsx): Gruss,
+   Name und Logo blenden nacheinander EIN und bleiben danach alle zusammen
+   stehen - kein Ersetzen/Wegblenden des vorigen Elements, das wirkte wie
+   ein abrupter Szenenwechsel statt einer einzigen, fliessenden Geste. */
+@keyframes splash-step {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 /* Druckreaktion fuer ganze Bereiche. Ein Knopf ohne sichtbare Reaktion auf den
@@ -273,8 +264,9 @@
 .animate-pulse-ring  { animation: pulse-ring 1.4s cubic-bezier(0.4,0,0.6,1) infinite; }
 .animate-glow-pulse  { animation: glow-pulse 2.5s ease-in-out infinite; }
 
-.splash-salam { animation: splash-salam 1.8s ease both; }
-.splash-brand { animation: splash-brand 1.8s ease both; }
+.splash-step-1 { animation: splash-step 0.6s var(--ease-out) both 0s; }
+.splash-step-2 { animation: splash-step 0.6s var(--ease-out) both 0.55s; }
+.splash-step-3 { animation: splash-step 0.6s var(--ease-out) both 1.05s; }
 
 .stagger-1 { animation: slide-up 0.28s var(--ease-out) both 0s; }
 .stagger-2 { animation: slide-up 0.28s var(--ease-out) both 0.04s; }
@@ -456,8 +448,7 @@
   .animate-pulse-ring { animation: none; }
   .animate-glow-pulse { animation: none; opacity: 0.7; }
   .animate-shake, .animate-pop { animation: none; }
-  .splash-salam { display: none; }
-  .splash-brand { animation: none; opacity: 1; transform: none; }
+  .splash-step-1, .splash-step-2, .splash-step-3 { animation: none; opacity: 1; transform: none; }
   /* Sawab-Moment ohne Bewegung: Der Ring entfaellt, Haekchen und Zeile
      blenden nur ein. Die Aussage bleibt, das Herumspringen nicht. */
   .animate-sawab-ring { animation: none; opacity: 0; }

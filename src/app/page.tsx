@@ -79,9 +79,17 @@ export default function HomePage() {
   const router = useTransitionRouter();
 
   const [loading, setLoading] = useState(true);
-  // Mindestanzeige des Ladescreens (Salam -> Markenname), damit die Animation
-  // immer durchlaeuft statt bei schneller Verbindung sofort wieder zu
-  // verschwinden - haengt bewusst nicht am echten Ladezustand.
+  // Der volle Gruss-Name-Logo-Intro laeuft nur beim allerersten Start -
+  // danach nur noch der schlichte Lader, solange der echte Ladezustand es
+  // verlangt. Lazy-Initializer liest localStorage synchron beim ersten
+  // Render, damit es keinen kurzen Umschalt-Blitz gibt.
+  const [showIntro] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    try { return !localStorage.getItem('ride2salah_intro_seen'); } catch { return false; }
+  });
+  // Mindestanzeige des Intros, damit die Animation (Gruss -> Name -> Logo)
+  // immer ganz durchlaeuft statt bei schneller Verbindung abgeschnitten zu
+  // werden - haengt bewusst nicht am echten Ladezustand.
   const [splashMinElapsed, setSplashMinElapsed] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [user, setUser] = useState<any>(null);
@@ -121,9 +129,13 @@ export default function HomePage() {
   const [togglingMaybe, setTogglingMaybe] = useState(false);
 
   useEffect(() => {
-    const t = setTimeout(() => setSplashMinElapsed(true), 1800);
+    if (!showIntro) return;
+    const t = setTimeout(() => {
+      setSplashMinElapsed(true);
+      try { localStorage.setItem('ride2salah_intro_seen', '1'); } catch {}
+    }, 1800);
     return () => clearTimeout(t);
-  }, []);
+  }, [showIntro]);
 
   useEffect(() => {
     let mounted = true;
@@ -360,29 +372,35 @@ export default function HomePage() {
   };
 
   /* ── LADESCREEN ── */
-  if (loading || !splashMinElapsed) {
-    /* Kurzer, fester Intro-Moment statt generischem Spinner: "Salam" blendet
-       kurz ein, dann uebernimmt die Marke - beide Phasen in derselben Stelle
-       uebereinander (siehe splash-salam/splash-brand in globals.css), damit
-       es wie ein durchgehendes Einblenden wirkt statt wie zwei Bildschirme.
-       splashMinElapsed haelt die Sequenz mindestens so lang sichtbar, wie die
-       Animation selbst dauert, auch wenn die Session schneller feststeht. */
+  if (loading || (showIntro && !splashMinElapsed)) {
+    if (!showIntro) {
+      // Wiederkehrender Besuch: kein Intro mehr, nur ein schlichter Lader,
+      // genau so lange wie der echte Ladezustand tatsaechlich braucht.
+      return (
+        <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--app-bg)' }}>
+          <div className="relative w-14 h-14 opacity-90">
+            <Image src="/mark.png" alt="Ride2Salah" fill className="object-contain" />
+          </div>
+        </div>
+      );
+    }
+
+    /* Nur beim allerersten Start: Gruss, Name und Logo blenden nacheinander
+       EIN und bleiben danach alle zusammen stehen (splash-step-1/2/3 in
+       globals.css) - ein einziges aufbauendes Bild statt mehrerer
+       Bildschirme, die sich gegenseitig ersetzen. splashMinElapsed haelt
+       die Sequenz mindestens so lang sichtbar, wie die Animation selbst
+       dauert, auch wenn die Session schneller feststeht. */
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--app-bg)' }}>
-        <div className="relative w-48 h-48 flex items-center justify-center">
-          <div className="splash-salam absolute inset-0 flex flex-col items-center justify-center gap-2">
-            <p dir="rtl" className="font-arabic text-4xl" style={{ color: 'var(--app-emerald)' }}>
-              السلام عليكم
-            </p>
-            <p className="text-[11px] font-bold uppercase tracking-[0.25em]" style={{ color: 'var(--app-gold)' }}>
-              Salam
-            </p>
-          </div>
-          <div className="splash-brand absolute inset-0 flex items-center justify-center">
-            <div className="relative w-40 h-40">
-              <Image src="/icon.png" alt="Ride2Salah" fill className="object-contain" />
-            </div>
-          </div>
+      <div className="min-h-screen flex flex-col items-center justify-center gap-5 px-8" style={{ background: 'var(--app-bg)' }}>
+        <p dir="rtl" className="splash-step-1 font-arabic text-2xl text-center leading-relaxed" style={{ color: 'var(--app-emerald)' }}>
+          السلام عليكم ورحمة الله وبركاته
+        </p>
+        <p className="splash-step-2 text-lg font-bold" style={{ color: 'var(--app-text)' }}>
+          Ride2Salah
+        </p>
+        <div className="splash-step-3 relative w-20 h-20">
+          <Image src="/mark.png" alt="" fill className="object-contain" />
         </div>
       </div>
     );
