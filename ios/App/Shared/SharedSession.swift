@@ -10,6 +10,13 @@ import Security
 
 let appGroupId = "group.app.ride2salah.mobile"
 
+/* Eine Quelle fuer die Supabase-Projektdaten statt doppelter Konstanten in
+   PrayerWidget.swift und hier - beide Targets kompilieren diese Datei. */
+enum SupabaseConfig {
+    static let baseURL = "https://kaqzhlmrftlksivvjvkh.supabase.co"
+    static let anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthcXpobG1yZnRsa3NpdnZqdmtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5Nzc1NzUsImV4cCI6MjA3NzU1MzU3NX0.nynrRnF0FfG9v5EdkP3IWhdgyegVlFtb0sFzo_H9AVo"
+}
+
 /* Keychain-Access-Group-Praefix ist der Apple-Team-Identifier - anders als
    in den .entitlements-Dateien kann hier nicht "$(AppIdentifierPrefix)"
    stehen, das ist nur eine Build-Zeit-Ersetzung fuer die Signierung, zur
@@ -72,8 +79,7 @@ enum SharedSession {
    Supabase-Refresh-Endpunkt, damit "Fahrt anbieten" auch dann noch
    funktioniert, wenn die App selbst schon laenger nicht geoeffnet wurde. */
 enum SupabaseAuthRefresh {
-    private static let anonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImthcXpobG1yZnRsa3NpdnZqdmtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE5Nzc1NzUsImV4cCI6MjA3NzU1MzU3NX0.nynrRnF0FfG9v5EdkP3IWhdgyegVlFtb0sFzo_H9AVo"
-    private static let refreshURL = URL(string: "https://kaqzhlmrftlksivvjvkh.supabase.co/auth/v1/token?grant_type=refresh_token")!
+    private static let refreshURL = URL(string: "\(SupabaseConfig.baseURL)/auth/v1/token?grant_type=refresh_token")!
 
     private struct RefreshResponse: Decodable {
         let access_token: String
@@ -90,7 +96,7 @@ enum SupabaseAuthRefresh {
 
         var request = URLRequest(url: refreshURL)
         request.httpMethod = "POST"
-        request.setValue(anonKey, forHTTPHeaderField: "apikey")
+        request.setValue(SupabaseConfig.anonKey, forHTTPHeaderField: "apikey")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = try? JSONEncoder().encode(["refresh_token": session.refreshToken])
 

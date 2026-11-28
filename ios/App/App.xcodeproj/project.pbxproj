@@ -25,6 +25,7 @@
 		E5F60718293A4B5C6D7E8F90 /* SharedSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F60718293A4B5C6D7E /* SharedSession.swift */; };
 		F60718293A4B5C6D7E8F9021 /* SharedSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F60718293A4B5C6D7E /* SharedSession.swift */; };
 		F44E120E26485D07E160BE85 /* PrayerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6724DB63F5CF5957AA849374 /* PrayerWidget.swift */; };
+		7B6A5948372615049A8B7C6D /* RideActions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8B7C6D5E4F30211A2B3C4D /* RideActions.swift */; };
 		36E7C2C613793F28A10E7D74 /* PrayerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 55B883B8374E355D9C41602C /* PrayerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -74,6 +75,7 @@
 		C3D4E5F60718293A4B5C6D7E /* SharedSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSession.swift; sourceTree = "<group>"; };
 		55B883B8374E355D9C41602C /* PrayerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PrayerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		6724DB63F5CF5957AA849374 /* PrayerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerWidget.swift; sourceTree = "<group>"; };
+		9A8B7C6D5E4F30211A2B3C4D /* RideActions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RideActions.swift; sourceTree = "<group>"; };
 		B46D1E8F8BA34C08A985ECFB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1B2C3D4E5F60718293A4B5C /* PrayerWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrayerWidget.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -129,6 +131,7 @@
 			isa = PBXGroup;
 			children = (
 				6724DB63F5CF5957AA849374 /* PrayerWidget.swift */,
+				9A8B7C6D5E4F30211A2B3C4D /* RideActions.swift */,
 				B46D1E8F8BA34C08A985ECFB /* Info.plist */,
 				A1B2C3D4E5F60718293A4B5C /* PrayerWidget.entitlements */,
 			);
@@ -287,6 +290,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F44E120E26485D07E160BE85 /* PrayerWidget.swift in Sources */,
+				7B6A5948372615049A8B7C6D /* RideActions.swift in Sources */,
 				F60718293A4B5C6D7E8F9021 /* SharedSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
