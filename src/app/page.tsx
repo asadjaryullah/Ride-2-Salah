@@ -391,22 +391,30 @@ export default function HomePage() {
       );
     }
 
-    /* Nur beim allerersten Start: Gruss, Name und Logo blenden nacheinander
-       EIN und bleiben danach alle zusammen stehen (splash-step-1/2/3 in
-       globals.css) - ein einziges aufbauendes Bild statt mehrerer
-       Bildschirme, die sich gegenseitig ersetzen. splashMinElapsed haelt
-       die Sequenz mindestens so lang sichtbar, wie die Animation selbst
-       dauert, auch wenn die Session schneller feststeht. */
+    /* Nur beim allerersten Start: Gruss, (Vor-)Name und Logo blenden
+       nacheinander EIN und bleiben danach alle zusammen stehen
+       (splash-step-1/2/3 in globals.css) - ein einziges aufbauendes Bild
+       statt mehrerer Bildschirme, die sich gegenseitig ersetzen.
+       profile.full_name ist oft schon da, bevor splashMinElapsed abgelaufen
+       ist (gleicher initApp-Durchlauf, siehe Ladezustand oben) - sonst
+       faellt's auf den App-Namen zurueck. Das Logo pulsiert/schwebt
+       dauerhaft weiter (wie beim wiederkehrenden Lader), statt nur einmal
+       einzublenden. */
+    const firstName = profile?.full_name?.split(' ')[0];
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-5 px-8" style={{ background: 'var(--app-bg)' }}>
         <p dir="rtl" className="splash-step-1 font-arabic text-2xl text-center leading-relaxed" style={{ color: 'var(--app-emerald)' }}>
           السلام عليكم ورحمة الله وبركاته
         </p>
         <p className="splash-step-2 text-lg font-bold" style={{ color: 'var(--app-text)' }}>
-          Ride2Salah
+          {firstName || 'Ride2Salah'}
         </p>
-        <div className="splash-step-3 relative w-20 h-20">
-          <Image src="/mark.png" alt="" fill className="object-contain" />
+        <div className="splash-step-3 relative w-16 h-16 flex items-center justify-center">
+          <div className="absolute inset-0 rounded-full animate-pulse-ring" style={{ background: 'var(--app-gold)' }} />
+          <div className="relative w-11 h-11 animate-float">
+            <Image src="/mark.png" alt="" fill className="object-contain"
+              style={{ filter: 'drop-shadow(0 0 20px var(--app-gold-glow))' }} />
+          </div>
         </div>
       </div>
     );
