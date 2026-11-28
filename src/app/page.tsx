@@ -79,6 +79,10 @@ export default function HomePage() {
   const router = useTransitionRouter();
 
   const [loading, setLoading] = useState(true);
+  // Mindestanzeige des Ladescreens (Salam -> Markenname), damit die Animation
+  // immer durchlaeuft statt bei schneller Verbindung sofort wieder zu
+  // verschwinden - haengt bewusst nicht am echten Ladezustand.
+  const [splashMinElapsed, setSplashMinElapsed] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [user, setUser] = useState<any>(null);
   const [notifPerm, setNotifPerm] = useState<string>('granted'); // default: nicht anzeigen
@@ -115,6 +119,11 @@ export default function HomePage() {
   const [availableDrivers, setAvailableDrivers] = useState<{ name: string; freeSeats: number }[]>([]);
   const [togglingRequest, setTogglingRequest] = useState(false);
   const [togglingMaybe, setTogglingMaybe] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setSplashMinElapsed(true), 1800);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -351,29 +360,29 @@ export default function HomePage() {
   };
 
   /* ── LADESCREEN ── */
-  if (loading) {
-    /* Bruecke zwischen nativem Splash (Mark + voller Schriftzug, siehe
-       resources/splash.png) und der eigentlichen Startseite: dieselbe Marke,
-       animiert statt statisch, damit der Uebergang nicht wie ein Bruch in
-       zwei verschiedene Bildschirme wirkt, sondern wie ein durchgehendes
-       Einblenden. */
+  if (loading || !splashMinElapsed) {
+    /* Kurzer, fester Intro-Moment statt generischem Spinner: "Salam" blendet
+       kurz ein, dann uebernimmt die Marke - beide Phasen in derselben Stelle
+       uebereinander (siehe splash-salam/splash-brand in globals.css), damit
+       es wie ein durchgehendes Einblenden wirkt statt wie zwei Bildschirme.
+       splashMinElapsed haelt die Sequenz mindestens so lang sichtbar, wie die
+       Animation selbst dauert, auch wenn die Session schneller feststeht. */
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center" style={{ background: 'var(--app-bg)' }}>
-        <div className="relative w-24 h-24 flex items-center justify-center">
-          {/* Radar-Puls statt generischem Spinner - "es laedt" kommt aus der
-             Marke selbst statt aus einem beliebigen Web-UI-Element. */}
-          <div className="absolute inset-0 rounded-full animate-pulse-ring" style={{ background: 'var(--app-gold)' }} />
-          <div className="relative w-16 h-16 animate-float">
-            <Image src="/icon.png" alt="Logo" fill className="object-contain"
-              style={{ filter: 'drop-shadow(0 0 20px var(--app-gold-glow))' }} />
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--app-bg)' }}>
+        <div className="relative w-48 h-48 flex items-center justify-center">
+          <div className="splash-salam absolute inset-0 flex flex-col items-center justify-center gap-2">
+            <p dir="rtl" className="font-arabic text-4xl" style={{ color: 'var(--app-emerald)' }}>
+              السلام عليكم
+            </p>
+            <p className="text-[11px] font-bold uppercase tracking-[0.25em]" style={{ color: 'var(--app-gold)' }}>
+              Salam
+            </p>
           </div>
-        </div>
-        <p className="stagger-1 mt-6 text-xs font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--app-gold)' }}>
-          Ride2Salah
-        </p>
-        {/* 20-Jahre-Jubilaeum - bewusst klein/zweitrangig, die Marke oben bleibt im Fokus */}
-        <div className="stagger-2 relative w-10 h-10 mt-5 opacity-80">
-          <Image src="/jubilaeum.png" alt="20 Jahre Bashier Moschee" fill className="object-contain" />
+          <div className="splash-brand absolute inset-0 flex items-center justify-center">
+            <div className="relative w-40 h-40">
+              <Image src="/icon.png" alt="Ride2Salah" fill className="object-contain" />
+            </div>
+          </div>
         </div>
       </div>
     );
