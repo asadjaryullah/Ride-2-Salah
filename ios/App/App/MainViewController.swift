@@ -37,5 +37,6 @@ class MainViewController: CAPBridgeViewController {
         barPlugin.attach(to: view)
 
         bridge?.registerPluginInstance(AppSettingsPlugin())
+        bridge?.registerPluginInstance(WidgetSyncPlugin())
     }
 }

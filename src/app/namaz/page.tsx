@@ -2,7 +2,9 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useTransitionRouter } from 'next-view-transitions';
+import { Capacitor } from '@capacitor/core';
 import { supabase } from '@/lib/supabase';
+import { WidgetSync } from '@/lib/widget-sync';
 import { Card } from "@/components/ui/card";
 import { Loader2, Check, RotateCcw, GraduationCap, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
@@ -92,7 +94,11 @@ export default function ZikrPage() {
   useEffect(() => {
     try {
       const cached = localStorage.getItem(`zikr_${todayBerlin()}`);
-      if (cached) setZikrData(JSON.parse(cached));
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        setZikrData(parsed);
+        syncZikrToWidget(parsed);
+      }
     } catch {}
 
     const load = async () => {
@@ -131,6 +137,7 @@ export default function ZikrPage() {
         } catch {}
         setZikrData(merged);
         setTodayLogId(merged.id);
+        syncZikrToWidget(merged);
         try { localStorage.setItem(`zikr_${today}`, JSON.stringify(merged)); } catch {}
       } else {
         const { data: newLog, error: insErr } = await supabase
@@ -141,6 +148,7 @@ export default function ZikrPage() {
         } else {
           setTodayLogId(newLog.id);
           setZikrData(newLog);
+          syncZikrToWidget(newLog);
         }
       }
 
@@ -156,7 +164,10 @@ export default function ZikrPage() {
   }, []);
 
   const zikrDateKey = `zikr_${todayBerlin()}`;
-  const saveLocal = (data: any) => { try { localStorage.setItem(zikrDateKey, JSON.stringify(data)); } catch {} };
+  const saveLocal = (data: any) => {
+    try { localStorage.setItem(zikrDateKey, JSON.stringify(data)); } catch {}
+    syncZikrToWidget(data);
+  };
 
   const onlyCounters = (data: any): Record<string, number> => {
     const out: Record<string, number> = {};
@@ -172,6 +183,19 @@ export default function ZikrPage() {
   const logIdRef = useRef<string | null>(null);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   useEffect(() => { logIdRef.current = todayLogId; }, [todayLogId]);
+
+  // Spiegelt die Zaehlstaende fuers Lock-Screen-/Home-Screen-Widget (iOS) -
+  // unabhaengig vom DB-Speichern selbst, der lokale Stand ist ohnehin schon
+  // sicher richtig und das Widget braucht keine Wartezeit dafuer.
+  const syncZikrToWidget = (data: Record<string, number>) => {
+    if (Capacitor.getPlatform() !== 'ios') return;
+    WidgetSync.setZikrCounts({
+      zikr1: data.zikr1_count ?? 0,
+      zikr2: data.zikr2_count ?? 0,
+      zikr3: data.zikr3_count ?? 0,
+      dateKey: todayBerlin(),
+    }).catch(() => {});
+  };
 
   const flushToDb = async () => {
     const payload = pendingRef.current;

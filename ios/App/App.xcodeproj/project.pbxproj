@@ -21,6 +21,9 @@
 		AE1E195FCACE946292B3CEA2 /* AppSettingsPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2686351B47FE682D66F1342E /* AppSettingsPlugin.swift */; };
 		47575024CBFA30388B038EA8 /* NativeBottomBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7AE501062DA72E8B18D462 /* NativeBottomBarView.swift */; };
 		0D525FE88D436AB991342117 /* NativeBottomBarPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3941B030B9128A50005DEFF /* NativeBottomBarPlugin.swift */; };
+		B1C2D3E4F5061728394A5B6C /* WidgetSyncPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E4F6081A2C3E4F5061728A /* WidgetSyncPlugin.swift */; };
+		E5F60718293A4B5C6D7E8F90 /* SharedSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F60718293A4B5C6D7E /* SharedSession.swift */; };
+		F60718293A4B5C6D7E8F9021 /* SharedSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F60718293A4B5C6D7E /* SharedSession.swift */; };
 		F44E120E26485D07E160BE85 /* PrayerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6724DB63F5CF5957AA849374 /* PrayerWidget.swift */; };
 		36E7C2C613793F28A10E7D74 /* PrayerWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 55B883B8374E355D9C41602C /* PrayerWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
@@ -67,9 +70,12 @@
 		2686351B47FE682D66F1342E /* AppSettingsPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettingsPlugin.swift; sourceTree = "<group>"; };
 		DA7AE501062DA72E8B18D462 /* NativeBottomBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeBottomBarView.swift; sourceTree = "<group>"; };
 		E3941B030B9128A50005DEFF /* NativeBottomBarPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeBottomBarPlugin.swift; sourceTree = "<group>"; };
+		D2E4F6081A2C3E4F5061728A /* WidgetSyncPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSyncPlugin.swift; sourceTree = "<group>"; };
+		C3D4E5F60718293A4B5C6D7E /* SharedSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedSession.swift; sourceTree = "<group>"; };
 		55B883B8374E355D9C41602C /* PrayerWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PrayerWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		6724DB63F5CF5957AA849374 /* PrayerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerWidget.swift; sourceTree = "<group>"; };
 		B46D1E8F8BA34C08A985ECFB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B5C /* PrayerWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PrayerWidget.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,8 +103,17 @@
 				958DCC722DB07C7200EA8C5F /* debug.xcconfig */,
 				504EC3061FED79650016851F /* App */,
 				5632AA89FC6670ECA1AF98F5 /* PrayerWidget */,
+				1829374655647382930AABBC /* Shared */,
 				504EC3051FED79650016851F /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		1829374655647382930AABBC /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				C3D4E5F60718293A4B5C6D7E /* SharedSession.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		504EC3051FED79650016851F /* Products */ = {
@@ -115,6 +130,7 @@
 			children = (
 				6724DB63F5CF5957AA849374 /* PrayerWidget.swift */,
 				B46D1E8F8BA34C08A985ECFB /* Info.plist */,
+				A1B2C3D4E5F60718293A4B5C /* PrayerWidget.entitlements */,
 			);
 			path = PrayerWidget;
 			sourceTree = "<group>";
@@ -137,6 +153,7 @@
 				2686351B47FE682D66F1342E /* AppSettingsPlugin.swift */,
 				DA7AE501062DA72E8B18D462 /* NativeBottomBarView.swift */,
 				E3941B030B9128A50005DEFF /* NativeBottomBarPlugin.swift */,
+				D2E4F6081A2C3E4F5061728A /* WidgetSyncPlugin.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -260,6 +277,8 @@
 				AE1E195FCACE946292B3CEA2 /* AppSettingsPlugin.swift in Sources */,
 				47575024CBFA30388B038EA8 /* NativeBottomBarView.swift in Sources */,
 				0D525FE88D436AB991342117 /* NativeBottomBarPlugin.swift in Sources */,
+				B1C2D3E4F5061728394A5B6C /* WidgetSyncPlugin.swift in Sources */,
+				E5F60718293A4B5C6D7E8F90 /* SharedSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -268,6 +287,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F44E120E26485D07E160BE85 /* PrayerWidget.swift in Sources */,
+				F60718293A4B5C6D7E8F9021 /* SharedSession.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -460,6 +480,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = PrayerWidget/PrayerWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -485,6 +506,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = PrayerWidget/PrayerWidget.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = NO;
