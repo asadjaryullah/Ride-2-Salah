@@ -238,6 +238,24 @@
   to   { transform: rotate(360deg); }
 }
 
+/* Ladescreen-Intro: "Salam" blendet kurz ein/aus, dann die Marke - beide
+   Phasen in EINER Animation mit fester Dauer (siehe SPLASH_MS in page.tsx),
+   damit Text und Logo nie gleichzeitig sichtbar sind und das Timing exakt
+   zum Mindest-Anzeige-Timer passt. */
+@keyframes splash-salam {
+  0%   { opacity: 0; transform: scale(0.96); }
+  14%  { opacity: 1; transform: scale(1); }
+  48%  { opacity: 1; transform: scale(1); }
+  64%  { opacity: 0; transform: scale(1.03); }
+  100% { opacity: 0; }
+}
+@keyframes splash-brand {
+  0%   { opacity: 0; transform: scale(0.94); }
+  58%  { opacity: 0; transform: scale(0.94); }
+  78%  { opacity: 1; transform: scale(1); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
 /* Druckreaktion fuer ganze Bereiche. Ein Knopf ohne sichtbare Reaktion auf den
    Finger wirkt langsam, auch wenn er es nicht ist - die Antwort kommt erst mit
    der neuen Ansicht, also gefuehlt zu spaet. 0.97 und 160ms sind bewusst knapp:
@@ -254,6 +272,9 @@
 .animate-shimmer     { animation: shimmer 2.4s linear infinite; background-size: 200% auto; }
 .animate-pulse-ring  { animation: pulse-ring 1.4s cubic-bezier(0.4,0,0.6,1) infinite; }
 .animate-glow-pulse  { animation: glow-pulse 2.5s ease-in-out infinite; }
+
+.splash-salam { animation: splash-salam 1.8s ease both; }
+.splash-brand { animation: splash-brand 1.8s ease both; }
 
 .stagger-1 { animation: slide-up 0.28s var(--ease-out) both 0s; }
 .stagger-2 { animation: slide-up 0.28s var(--ease-out) both 0.04s; }
@@ -435,6 +456,8 @@
   .animate-pulse-ring { animation: none; }
   .animate-glow-pulse { animation: none; opacity: 0.7; }
   .animate-shake, .animate-pop { animation: none; }
+  .splash-salam { display: none; }
+  .splash-brand { animation: none; opacity: 1; transform: none; }
   /* Sawab-Moment ohne Bewegung: Der Ring entfaellt, Haekchen und Zeile
      blenden nur ein. Die Aussage bleibt, das Herumspringen nicht. */
   .animate-sawab-ring { animation: none; opacity: 0; }
