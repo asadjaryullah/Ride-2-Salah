@@ -140,3 +140,30 @@ enum SharedZikr {
         return try? JSONDecoder().decode(SharedZikrCounts.self, from: data)
     }
 }
+
+/* Rueckmeldung des "Fahrt anbieten"-Knopfs: ein Tap auf einen interaktiven
+   Widget-Button fuehrt den AppIntent im Hintergrund aus, OHNE dass iOS
+   zuverlaessig irgendeinen sichtbaren System-Dialog dazu einblendet - die
+   einzige verlaessliche Rueckmeldung ist, den Ausgang selbst im Widget
+   anzuzeigen (hier abgelegt, nach dem Reload direkt in der Dashboard-
+   Ansicht sichtbar). */
+struct SharedRideActionStatus: Codable {
+    let message: String
+    let success: Bool
+    let timestamp: Double
+}
+
+enum SharedRideStatus {
+    private static let storageKey = "last_ride_action"
+
+    static func save(message: String, success: Bool) {
+        let status = SharedRideActionStatus(message: message, success: success, timestamp: Date().timeIntervalSince1970)
+        guard let data = try? JSONEncoder().encode(status) else { return }
+        UserDefaults(suiteName: appGroupId)?.set(data, forKey: storageKey)
+    }
+
+    static func load() -> SharedRideActionStatus? {
+        guard let data = UserDefaults(suiteName: appGroupId)?.data(forKey: storageKey) else { return nil }
+        return try? JSONDecoder().decode(SharedRideActionStatus.self, from: data)
+    }
+}

@@ -92,28 +92,40 @@ struct OfferRideIntent: AppIntent {
     static var title: LocalizedStringResource = "Fahrt anbieten"
     static var description = IntentDescription("Bietet eine Fahrt zum naechsten Gebet an, ohne die App zu oeffnen.")
 
+    /* Ein Tap auf einen interaktiven Widget-Button fuehrt den AppIntent im
+       Hintergrund aus - iOS zeigt dabei verlaesslich KEINEN sichtbaren
+       System-Dialog an (das .result(dialog:) ist fuer Siri/Kurzbefehle
+       gedacht, nicht fuer Widget-Taps). Deshalb wird das Ergebnis zusaetzlich
+       in SharedRideStatus abgelegt und ein Reload angestossen, damit die
+       Dashboard-Ansicht die Rueckmeldung direkt zeigt. */
+    private func finish(_ message: String, success: Bool) -> some IntentResult & ProvidesDialog {
+        SharedRideStatus.save(message: message, success: success)
+        WidgetCenter.shared.reloadAllTimelines()
+        return .result(dialog: IntentDialog(stringLiteral: message))
+    }
+
     func perform() async throws -> some IntentResult & ProvidesDialog {
         guard let session = await SupabaseAuthRefresh.validSession() else {
-            return .result(dialog: "Bitte einmal die App oeffnen und anmelden, dann klappt das auch vom Sperrbildschirm aus.")
+            return finish("Bitte einmal die App oeffnen und anmelden, dann klappt das auch vom Sperrbildschirm aus.", success: false)
         }
 
         let slots: [PrayerSlot]
         do {
             slots = try await fetchPrayerSlots()
         } catch {
-            return .result(dialog: "Gebetszeiten konnten gerade nicht geladen werden.")
+            return finish("Gebetszeiten konnten gerade nicht geladen werden.", success: false)
         }
         guard let next = slots.min(by: { $0.occurrence < $1.occurrence }) else {
-            return .result(dialog: "Kein Gebet gefunden.")
+            return finish("Kein Gebet gefunden.", success: false)
         }
         let rideDate = isoDate(next.occurrence)
 
         guard let profile = try? await fetchProfile(userId: session.userId, accessToken: session.accessToken) else {
-            return .result(dialog: "Profil nicht gefunden - bitte in der App einmal vervollstaendigen.")
+            return finish("Profil nicht gefunden - bitte in der App einmal vervollstaendigen.", success: false)
         }
 
         if (try? await hasExistingRide(driverId: session.userId, prayerId: next.id, rideDate: rideDate, accessToken: session.accessToken)) == true {
-            return .result(dialog: "Du bietest \(next.name) heute schon an.")
+            return finish("Du bietest \(next.name) heute schon an.", success: false)
         }
 
         let ok = (try? await insertRide(
@@ -122,10 +134,9 @@ struct OfferRideIntent: AppIntent {
         )) ?? false
 
         if ok {
-            WidgetCenter.shared.reloadAllTimelines()
-            return .result(dialog: "Fahrt zum \(next.name) angeboten!")
+            return finish("Fahrt zum \(next.name) angeboten!", success: true)
         } else {
-            return .result(dialog: "Fahrt konnte nicht angelegt werden.")
+            return finish("Fahrt konnte nicht angelegt werden.", success: false)
         }
     }
 }

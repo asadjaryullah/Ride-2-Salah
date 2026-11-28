@@ -42,6 +42,7 @@ struct PrayerEntry: TimelineEntry {
     let nextPrayerId: String
     let allPrayers: [PrayerSlot] // sortiert, alle 5 mit ihrem naechsten Eintreffzeitpunkt
     let zikr: SharedZikrCounts?
+    let lastRideStatus: SharedRideActionStatus?
 }
 
 func berlinCalendar() -> Calendar {
@@ -91,9 +92,10 @@ private func fetchPrayerEntry() async -> PrayerEntry {
     let calendar = berlinCalendar()
     let fallbackDate = calendar.date(byAdding: .hour, value: 1, to: now) ?? now
     let zikr = SharedZikr.load()
+    let rideStatus = SharedRideStatus.load()
     let fallback = PrayerEntry(
         date: now, prayerName: "Gebet", prayerDate: fallbackDate,
-        nextPrayerId: "", allPrayers: [], zikr: zikr
+        nextPrayerId: "", allPrayers: [], zikr: zikr, lastRideStatus: rideStatus
     )
 
     do {
@@ -102,7 +104,7 @@ private func fetchPrayerEntry() async -> PrayerEntry {
 
         return PrayerEntry(
             date: now, prayerName: next.name, prayerDate: next.occurrence,
-            nextPrayerId: next.id, allPrayers: slots, zikr: zikr
+            nextPrayerId: next.id, allPrayers: slots, zikr: zikr, lastRideStatus: rideStatus
         )
     } catch {
         return fallback
@@ -113,7 +115,7 @@ struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> PrayerEntry {
         PrayerEntry(
             date: Date(), prayerName: "Dhuhr", prayerDate: Date().addingTimeInterval(3600),
-            nextPrayerId: "dhuhr", allPrayers: [], zikr: nil
+            nextPrayerId: "dhuhr", allPrayers: [], zikr: nil, lastRideStatus: nil
         )
     }
 
@@ -144,16 +146,15 @@ struct PrayerWidgetEntryView: View {
     var body: some View {
         switch family {
         case .accessoryInline:
-            Text("\(entry.prayerName) ") + Text(entry.prayerDate, style: .timer)
+            Text("\(entry.prayerName) \(entry.prayerDate, style: .time)")
 
         case .accessoryCircular:
-            ProgressView(timerInterval: Date()...entry.prayerDate, countsDown: true) {
-                Text(entry.prayerName)
-            } currentValueLabel: {
-                Text(entry.prayerDate, style: .timer)
-                    .font(.system(size: 11))
+            VStack(spacing: 2) {
+                Image(systemName: prayerIconName(for: entry.nextPrayerId))
+                    .font(.system(size: 16))
+                Text(entry.prayerDate, style: .time)
+                    .font(.system(size: 13, weight: .semibold, design: .rounded))
             }
-            .progressViewStyle(.circular)
 
         case .accessoryRectangular:
             // Alle 5 Gebete auf einen Blick - sehr wenig Platz, deshalb nur
@@ -175,16 +176,16 @@ struct PrayerWidgetEntryView: View {
             HStack(spacing: 16) {
                 Image(systemName: prayerIconName(for: entry.nextPrayerId))
                     .font(.system(size: 34))
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(brandGold)
                 VStack(alignment: .leading, spacing: 4) {
                     Text("Nächstes Gebet")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     Text(entry.prayerName)
                         .font(.title2).bold()
-                    Text(entry.prayerDate, style: .timer)
+                    Text(entry.prayerDate, style: .time)
                         .font(.title3)
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(brandGold)
                 }
                 Spacer()
             }
@@ -197,15 +198,12 @@ struct PrayerWidgetEntryView: View {
             VStack(spacing: 6) {
                 Image(systemName: prayerIconName(for: entry.nextPrayerId))
                     .font(.system(size: 22))
-                    .foregroundStyle(.orange)
+                    .foregroundStyle(brandGold)
                 Text(entry.prayerName)
                     .font(.headline)
-                Text(entry.prayerDate, style: .timer)
-                    .font(.subheadline)
-                    .foregroundStyle(.orange)
                 Text(entry.prayerDate, style: .time)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
+                    .font(.subheadline)
+                    .foregroundStyle(brandGold)
             }
             .padding()
         }
@@ -281,6 +279,16 @@ private struct PrayerDashboardView: View {
             }
             .buttonStyle(.borderedProminent)
             .tint(brandEmerald)
+
+            if let status = entry.lastRideStatus {
+                HStack(spacing: 4) {
+                    Image(systemName: status.success ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+                    Text(status.message)
+                }
+                .font(.caption2)
+                .foregroundStyle(status.success ? brandEmerald : .secondary)
+                .lineLimit(2)
+            }
         }
         .padding(14)
     }
