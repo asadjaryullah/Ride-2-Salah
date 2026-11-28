@@ -157,13 +157,17 @@ struct PrayerWidgetEntryView: View {
             }
 
         case .accessoryRectangular:
-            // Alle 5 Gebete auf einen Blick - sehr wenig Platz, deshalb nur
-            // Icon + Uhrzeit pro Spalte, das naechste Gebet hervorgehoben.
+            // Alle 5 Gebete auf einen Blick - sehr wenig Platz, deshalb Icon +
+            // abgekuerzter Name + Uhrzeit pro Spalte, das naechste Gebet
+            // hervorgehoben.
             HStack(spacing: 7) {
                 ForEach(entry.allPrayers, id: \.id) { slot in
                     VStack(spacing: 1) {
                         Image(systemName: prayerIconName(for: slot.id))
                             .font(.system(size: 11))
+                        Text(slot.name.prefix(3))
+                            .font(.system(size: 7, weight: .semibold))
+                            .textCase(.uppercase)
                         Text(slot.time)
                             .font(.system(size: 9, weight: .semibold, design: .rounded))
                             .minimumScaleFactor(0.7)
