@@ -19,9 +19,10 @@ public class NativeBottomBarPlugin: CAPPlugin, CAPBridgedPlugin {
 
     /* Von MainViewController.capacitorDidLoad() aufgerufen. rootView ist
        der View-Controller, dessen oberste View die WKWebView traegt - die
-       Bar liegt als Geschwister-View obendrauf, volle Breite, am unteren
-       Rand. Mehrfachaufrufe (z.B. bei App-Resume) haengen die View nicht
-       doppelt an. */
+       Bar liegt als Geschwister-View obendrauf, schwebend mit Rand zu
+       allen Seiten (Instagram-Stil) statt randlos am unteren Rand zu
+       kleben. Mehrfachaufrufe (z.B. bei App-Resume) haengen die View
+       nicht doppelt an. */
     func attach(to rootView: UIView) {
         guard barView == nil else { return }
 
@@ -33,9 +34,10 @@ public class NativeBottomBarPlugin: CAPPlugin, CAPBridgedPlugin {
         rootView.addSubview(bar)
 
         NSLayoutConstraint.activate([
-            bar.leadingAnchor.constraint(equalTo: rootView.leadingAnchor),
-            bar.trailingAnchor.constraint(equalTo: rootView.trailingAnchor),
-            bar.bottomAnchor.constraint(equalTo: rootView.bottomAnchor),
+            bar.leadingAnchor.constraint(equalTo: rootView.leadingAnchor, constant: 20),
+            bar.trailingAnchor.constraint(equalTo: rootView.trailingAnchor, constant: -20),
+            bar.bottomAnchor.constraint(equalTo: rootView.safeAreaLayoutGuide.bottomAnchor, constant: -8),
+            bar.heightAnchor.constraint(equalToConstant: NativeBottomBarView.height),
         ])
 
         barView = bar

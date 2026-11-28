@@ -1,27 +1,24 @@
 import UIKit
 
 /* Farbwerte 1:1 aus src/app/globals.css uebernommen (--app-surface1,
-   --app-border, --app-gold, --app-text3), getrennt nach hell/dunkel - siehe
-   dortige :root und @media (prefers-color-scheme: dark) / [data-theme="dark"]
+   --app-gold, --app-text3), getrennt nach hell/dunkel - siehe dortige
+   :root und @media (prefers-color-scheme: dark) / [data-theme="dark"]
    Bloecke. */
 private struct BarColors {
     let surface: UIColor
-    let border: UIColor
     let gold: UIColor
     let text3: UIColor
     let blurStyle: UIBlurEffect.Style
 
     static let light = BarColors(
-        surface: UIColor(red: 0xed / 255, green: 0xe8 / 255, blue: 0xdf / 255, alpha: 0.94),
-        border: UIColor(red: 0xdd / 255, green: 0xd5 / 255, blue: 0xc5 / 255, alpha: 1),
+        surface: UIColor(red: 0xed / 255, green: 0xe8 / 255, blue: 0xdf / 255, alpha: 0.90),
         gold: UIColor(red: 0xa0 / 255, green: 0x78 / 255, blue: 0x20 / 255, alpha: 1),
         text3: UIColor(red: 0x7a / 255, green: 0x6a / 255, blue: 0x50 / 255, alpha: 1),
         blurStyle: .systemUltraThinMaterialLight
     )
 
     static let dark = BarColors(
-        surface: UIColor(red: 0x0f / 255, green: 0x0f / 255, blue: 0x1a / 255, alpha: 0.94),
-        border: UIColor(red: 0x2a / 255, green: 0x2a / 255, blue: 0x42 / 255, alpha: 1),
+        surface: UIColor(red: 0x17 / 255, green: 0x17 / 255, blue: 0x1f / 255, alpha: 0.85),
         gold: UIColor(red: 0xC9 / 255, green: 0xA2 / 255, blue: 0x3C / 255, alpha: 1),
         text3: UIColor(red: 0x8a / 255, green: 0x8a / 255, blue: 0xa0 / 255, alpha: 1),
         blurStyle: .systemUltraThinMaterialDark
@@ -63,8 +60,8 @@ private final class TabButtonView: UIControl {
         NSLayoutConstraint.activate([
             icon.centerXAnchor.constraint(equalTo: centerXAnchor),
             icon.centerYAnchor.constraint(equalTo: centerYAnchor),
-            icon.widthAnchor.constraint(equalToConstant: 27),
-            icon.heightAnchor.constraint(equalToConstant: 27),
+            icon.widthAnchor.constraint(equalToConstant: 25),
+            icon.heightAnchor.constraint(equalToConstant: 25),
         ])
 
         // Verhindert einen kurzen Blanko-Blitz vor dem ersten setState()-Aufruf
@@ -80,7 +77,7 @@ private final class TabButtonView: UIControl {
         switch iconSource {
         case .symbol(let activeName, let inactiveName):
             let name = active ? activeName : inactiveName
-            let config = UIImage.SymbolConfiguration(pointSize: 23, weight: active ? .semibold : .regular)
+            let config = UIImage.SymbolConfiguration(pointSize: 21, weight: active ? .semibold : .regular)
             return UIImage(systemName: name, withConfiguration: config)
         case .asset(let name):
             return UIImage(named: name)?.withRenderingMode(.alwaysTemplate)
@@ -94,12 +91,17 @@ private final class TabButtonView: UIControl {
     }
 }
 
-/* Die eigentliche Bottom-Bar: Blur-Hintergrund + 1pt Top-Border + 5
-   gleich breite, reine Icon-Spalten (Zikr/Termine/Start/Fahrt/Profil) -
-   Instagram-Stil, kein Textlabel, kein schwebender Start-Knopf mehr. */
+/* Schwebende, komplett abgerundete Pille (Instagram-Stil) statt einer
+   randlosen, am unteren Rand klebenden Leiste: Abstand zu allen Seiten
+   (siehe Konstanten in NativeBottomBarPlugin.attach), Schatten statt
+   einer oberen Trennlinie zeigt die Erhebung ueber dem Inhalt. Die View
+   selbst entspricht exakt den sichtbaren Pillen-Grenzen - kein
+   unsichtbarer Vollbreiten-Bereich, der Taps neben der Pille schlucken
+   wuerde. */
 final class NativeBottomBarView: UIView {
+    static let height: CGFloat = 64
+
     private let blur = UIVisualEffectView()
-    private let topBorder = UIView()
     private let stack = UIStackView()
     private var tabButtons: [TabButtonView] = []
     private var colors: BarColors = .light
@@ -109,13 +111,17 @@ final class NativeBottomBarView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         translatesAutoresizingMaskIntoConstraints = false
-        clipsToBounds = false
+        clipsToBounds = false // Schatten darf ueber die Pillen-Grenze hinausragen
+
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowOffset = CGSize(width: 0, height: 8)
+        layer.shadowRadius = 20
+        layer.shadowOpacity = 0.28
 
         blur.translatesAutoresizingMaskIntoConstraints = false
+        blur.layer.cornerRadius = Self.height / 2
+        blur.clipsToBounds = true
         addSubview(blur)
-
-        topBorder.translatesAutoresizingMaskIntoConstraints = false
-        addSubview(topBorder)
 
         stack.translatesAutoresizingMaskIntoConstraints = false
         stack.axis = .horizontal
@@ -140,16 +146,10 @@ final class NativeBottomBarView: UIView {
             blur.trailingAnchor.constraint(equalTo: trailingAnchor),
             blur.bottomAnchor.constraint(equalTo: bottomAnchor),
 
-            topBorder.topAnchor.constraint(equalTo: topAnchor),
-            topBorder.leadingAnchor.constraint(equalTo: leadingAnchor),
-            topBorder.trailingAnchor.constraint(equalTo: trailingAnchor),
-            topBorder.heightAnchor.constraint(equalToConstant: 1),
-
             stack.topAnchor.constraint(equalTo: topAnchor),
-            stack.leadingAnchor.constraint(equalTo: leadingAnchor),
-            stack.trailingAnchor.constraint(equalTo: trailingAnchor),
-            stack.heightAnchor.constraint(equalToConstant: 56),
-            stack.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+            stack.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
+            stack.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
+            stack.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
 
         applyColors()
@@ -162,7 +162,6 @@ final class NativeBottomBarView: UIView {
     private func applyColors() {
         blur.effect = UIBlurEffect(style: colors.blurStyle)
         backgroundColor = .clear
-        topBorder.backgroundColor = colors.border
         // Farb-Tint ueber dem Blur, entspricht color-mix(... --app-surface1 94%, transparent) im Web.
         blur.contentView.backgroundColor = colors.surface
 
